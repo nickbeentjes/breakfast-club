@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://breakfast-club.dev/schemas/identity.schema.json",
+  "title": "IdentitySchema",
+  "description": "JSON Schema for Breakfast Club identity documents",
+  "type": "object",
+  "required": ["schema_version", "identity_created", "source", "persona", "skills", "projects", "values"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver version of this schema"
+    },
+    "identity_created": {
+      "type": "string",
+      "description": "ISO 8601 creation timestamp"
+    },
+    "source": {
+      "type": "string",
+      "description": "Origin of the identity data"
+    },
+    "persona": {
+      "type": "object",
+      "description": "Personal identity — communication and working style",
+      "required": ["_sensitivity", "name", "communication_style", "working_style"],
+      "additionalProperties": true,
+      "properties": {
+        "_sensitivity": {
+          "$ref": "#/$defs/sensitivityLevel",
+          "default": "personal"
+        },
+        "name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "input_method": {
+          "type": "string"
+        },
+        "communication_style": {
+          "type": "object",
+          "required": ["primary"],
+          "additionalProperties": true,
+          "properties": {
+            "primary": { "type": "string" },
+            "input_method": { "type": "string" },
+            "preferences": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "dislikes": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "working_style": {
+          "type": "object",
+          "required": ["approach"],
+          "additionalProperties": true,
+          "properties": {
+            "approach": { "type": "string" },
+            "tools": { "type": "string" },
+            "methodology": { "type": "string" },
+            "autonomy": { "type": "string" },
+            "strengths": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "description": "Technical skills and domain expertise",
+      "required": ["_sensitivity", "primary_stack", "domain_expertise"],
+      "additionalProperties": true,
+      "properties": {
+        "_sensitivity": {
+          "$ref": "#/$defs/sensitivityLevel",
+          "default": "professional"
+        },
+        "primary_stack": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "domain_expertise": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["depth", "details"],
+            "properties": {
+              "depth": {
+                "type": "string",
+                "enum": ["beginner", "intermediate", "intermediate-advanced", "advanced", "expert"]
+              },
+              "details": { "type": "string" }
+            }
+          }
+        },
+        "trades_knowledge": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "projects": {
+      "type": "object",
+      "description": "Active and completed projects",
+      "required": ["_sensitivity", "active"],
+      "additionalProperties": true,
+      "properties": {
+        "_sensitivity": {
+          "$ref": "#/$defs/sensitivityLevel",
+          "default": "professional"
+        },
+        "active": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type", "status", "description"],
+            "additionalProperties": true,
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "status": { "type": "string" },
+              "description": { "type": "string" },
+              "stack": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "domain": { "type": "string" },
+              "location": { "type": "string" }
+            }
+          }
+        },
+        "completed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "values": {
+      "type": "object",
+      "description": "Professional values and technical opinions",
+      "required": ["_sensitivity", "professional"],
+      "additionalProperties": true,
+      "properties": {
+        "_sensitivity": {
+          "$ref": "#/$defs/sensitivityLevel",
+          "default": "personal"
+        },
+        "professional": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "technical_opinions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "description": "Personal and professional relationships",
+      "additionalProperties": true,
+      "properties": {
+        "_sensitivity": {
+          "$ref": "#/$defs/sensitivityLevel",
+          "default": "private"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sensitivityLevel": {
+      "type": "string",
+      "enum": ["public", "professional", "personal", "private"],
+      "description": "Sensitivity label for projection enforcement"
+    }
+  }
+}

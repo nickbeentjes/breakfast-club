@@ -1,0 +1,180 @@
+{
+  "schema_version": "0.1.0",
+  "identity_created": "2026-03-27T08:30:00+11:00",
+  "source": "claude-opus-memory-export",
+
+  "persona": {
+    "_sensitivity": "personal",
+    "name": "Nick",
+    "location": "Newcastle, NSW, Australia",
+    "communication_style": {
+      "primary": "Direct, fast-moving, stream-of-consciousness",
+      "input_method": "Often voice-dictating while walking or in noisy environments",
+      "preferences": [
+        "Pragmatic solutions over over-engineered ones",
+        "Show me it works, then we can make it pretty",
+        "No corporate jargon — ever",
+        "Lateral thinking and layered jokes appreciated",
+        "Will tell you your architecture is shit if it is"
+      ],
+      "dislikes": [
+        "Planned obsolescence",
+        "Vendor lock-in",
+        "Enterprise theater (unnecessary process for process sake)",
+        "Cover letters and resume bullshit",
+        "Having to repeat context across AI sessions"
+      ]
+    },
+    "working_style": {
+      "approach": "Spitball ideas conversationally first, then build fast",
+      "tools": "Mac Mini running Claude Code, Node.js/TypeScript stack",
+      "methodology": "Uses GSD (Get Shit Done) framework for Claude Code projects",
+      "autonomy": "Works best with high autonomy, pushes back on bad decisions",
+      "strengths": [
+        "Connecting disparate systems and domains",
+        "Seeing practical shortcuts others miss",
+        "Deep domain knowledge across multiple industries",
+        "Naming things (Baked Potato, Breakfast Club — always multi-layered)"
+      ]
+    }
+  },
+
+  "skills": {
+    "_sensitivity": "professional",
+    "primary_stack": {
+      "languages": ["Node.js", "TypeScript", "JavaScript"],
+      "databases": ["PostgreSQL", "TimescaleDB", "MongoDB", "Firebird"],
+      "infrastructure": ["Azure", "Tailscale", "PM2", "Docker"],
+      "ai_tools": ["Claude Code", "Claude API", "Whisper STT", "Porcupine wake-word"],
+      "protocols": ["MCP", "NMEA 2000", "NMEA 0183", "Signal K", "MQTT"],
+      "hardware": ["ESP32", "Arduino", "Jetson Orin Nano", "Bosch e-bike systems"]
+    },
+    "domain_expertise": {
+      "hospitality_tech": {
+        "depth": "expert",
+        "details": "20+ years. POS systems (Square, RedCat), kitchen display systems, menu engineering, inventory management, staff scheduling, delivery platform integration (UberEats, DoorDash). Built complete hospitality intelligence platform (Cafe Brain)."
+      },
+      "systems_integration": {
+        "depth": "expert",
+        "details": "Core professional identity. Connecting legacy systems to modern stacks, protocol translation, data migration, API orchestration. The person you call when System A needs to talk to System B and nobody built an interface."
+      },
+      "marine_electronics": {
+        "depth": "advanced",
+        "details": "NMEA 2000/0183, Signal K, OpenCPN, vessel management systems. Building Kees — an AI orchestration layer for superyacht management. MoCA 2.5 and G.hn networking for vessel infrastructure."
+      },
+      "iot_industrial_control": {
+        "depth": "advanced",
+        "details": "Home Assistant, ESPHome, ESP32, Tapo/TP-Link ecosystem. Industrial control and monitoring. DIY solar (23 panels, Fronius inverter), automated salt chlorination."
+      },
+      "azure_infrastructure": {
+        "depth": "intermediate-advanced",
+        "details": "Azure AD, Conditional Access, break-glass accounts, security hardening. Manages Azure environments for consulting clients."
+      },
+      "blockchain": {
+        "depth": "intermediate",
+        "details": "Hands-on experience running Bittensor nodes, mining TAO. Understands validator/miner economics. Early adopter energy."
+      }
+    },
+    "trades_knowledge": [
+      "Australian electrical standards (deep familiarity)",
+      "TIG/MIG welding",
+      "Commercial refrigeration (glycol chillers, walk-in units)",
+      "3D printing",
+      "Coffee roasting economics",
+      "E-bike battery pack rebuilding"
+    ]
+  },
+
+  "projects": {
+    "_sensitivity": "professional",
+    "active": [
+      {
+        "name": "Breakfast Club",
+        "type": "open-source",
+        "status": "architecture-complete, starting build",
+        "description": "Self-sovereign AI identity system. Git-based storage, MongoDB hot cache, MCP server, transparency log.",
+        "stack": ["Node.js", "TypeScript", "MongoDB Atlas", "GitHub API", "MCP SDK"]
+      },
+      {
+        "name": "Baked Potato POS",
+        "type": "product",
+        "status": "foundation-spec-complete",
+        "description": "Custom hospitality POS with radial modifier UI, ECS-inspired entity model, audio order pipeline (Whisper), E-stop feedback system. North star: 'The customer orders a rare steak for $30. They get a rare steak. It costs $30.'",
+        "domain": "bakedpotato.com",
+        "stack": ["Node.js", "TypeScript"]
+      },
+      {
+        "name": "Moneypenny Partnership",
+        "type": "business",
+        "status": "proposal-stage",
+        "description": "Profit-share partnership with Moneypenny bar/restaurant owner Yam Adhikari. Nick is owner/operator. Rebranding strategy (MP's day, Q evening), happy hour, morning coffee window, menu rationalization from 60+ to ~30 items.",
+        "location": "1 Honeysuckle Drive, Newcastle"
+      },
+      {
+        "name": "Kees",
+        "type": "product",
+        "status": "early-development",
+        "description": "AI orchestration layer for superyacht management. Signal K as vessel data broker, OpenCPN for navigation, Node-RED for automation, browser-based airshow display, 3D boat model via photogrammetry.",
+        "stack": ["Node.js", "Signal K", "Three.js", "OpenCPN"]
+      },
+      {
+        "name": "Nick Bot",
+        "type": "personal-tool",
+        "status": "in-progress",
+        "description": "Personal Telegram bot bridging Telegram to Claude Code on Mac Mini. Session management, agent spawning, cron scheduling, memory injection.",
+        "stack": ["Node.js", "Telegram API", "Tailscale"]
+      }
+    ],
+    "completed": [
+      {
+        "name": "Cafe Brain",
+        "description": "Comprehensive Node.js hospitality intelligence platform for partner Lou's café. Square POS integration, TimescaleDB, MongoDB, AIAnalyticsEngine, weather API, Kitchen Display System. Voice assistant spec using Jetson Orin Nano."
+      },
+      {
+        "name": "Moneypenny POS Migration",
+        "description": "Migrated from legacy RedCat POS (Windows XP/Firebird 2.5) to Square. CSV categorization of 314 products. Square MCP integration testing."
+      },
+      {
+        "name": "Azure Security Hardening",
+        "description": "Azure infrastructure hardening for client John's environment after crypto mining incident. Break-glass account setup, Conditional Access policies."
+      },
+      {
+        "name": "DIY Solar Installation",
+        "description": "23 LG NeON 2 355W panels, Fronius Symo 8.2-3-M inverter. Self-designed and installed."
+      }
+    ]
+  },
+
+  "relationships": {
+    "_sensitivity": "private",
+    "personal": {
+      "partner": "Lou (previously ran Mutha Focaccia café on TAFE NSW property)",
+      "daughter": "Isabel"
+    },
+    "professional": {
+      "moneypenny_owner": "Yam Adhikari",
+      "azure_client": "John",
+      "recruiter_contact": "James MacDonald (NewyTechPeople / NTP)",
+      "lwb_contact": "Mark (insider at Life Without Barriers)"
+    }
+  },
+
+  "values": {
+    "_sensitivity": "personal",
+    "professional": [
+      "Open source and open standards over proprietary lock-in",
+      "Self-hosted and composable architectures",
+      "People should own their data and their AI relationships",
+      "Technology should serve the user, not extract from them",
+      "Ship working software, iterate later",
+      "Honesty over diplomacy — but not cruel about it"
+    ],
+    "technical_opinions": [
+      "AI is going to be the operating system of the future — device/OS won't matter",
+      "The relationship between a person and their AI is as valuable as any other data they own",
+      "Most enterprise software exists to justify its own existence",
+      "If a system requires a 50-page manual, the system is wrong",
+      "Microservices are usually over-engineering for the scale people actually operate at"
+    ]
+  }
+}
