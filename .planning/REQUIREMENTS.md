@@ -7,12 +7,12 @@
 
 ### Identity Schema
 
-- [ ] **IDNT-01**: Private repo template has a defined JSON schema for persona (name, communication style, working style, preferences, dislikes)
-- [ ] **IDNT-02**: Private repo template has a defined JSON schema for skills (primary stack, domain expertise, trades knowledge)
-- [ ] **IDNT-03**: Private repo template has a defined JSON schema for active projects (name, status, description, stack)
-- [ ] **IDNT-04**: Private repo template has a defined JSON schema for values and beliefs (professionally relevant fields only)
-- [ ] **IDNT-05**: All schema fields have a sensitivity label (personal/professional/public) for projection enforcement
-- [ ] **IDNT-06**: Founder's identity (nick-identity.json) is loaded as seed data and validates against the schema
+- [x] **IDNT-01**: Private repo template has a defined JSON schema for persona (name, communication style, working style, preferences, dislikes)
+- [x] **IDNT-02**: Private repo template has a defined JSON schema for skills (primary stack, domain expertise, trades knowledge)
+- [x] **IDNT-03**: Private repo template has a defined JSON schema for active projects (name, status, description, stack)
+- [x] **IDNT-04**: Private repo template has a defined JSON schema for values and beliefs (professionally relevant fields only)
+- [x] **IDNT-05**: All schema fields have a sensitivity label (personal/professional/public) for projection enforcement
+- [x] **IDNT-06**: Founder's identity (nick-identity.json) is loaded as seed data and validates against the schema
 
 ### MCP Server — Owner Tools
 
@@ -119,12 +119,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| IDNT-01 | Phase 1 | Pending |
-| IDNT-02 | Phase 1 | Pending |
-| IDNT-03 | Phase 1 | Pending |
-| IDNT-04 | Phase 1 | Pending |
-| IDNT-05 | Phase 1 | Pending |
-| IDNT-06 | Phase 1 | Pending |
+| IDNT-01 | Phase 1 | Complete |
+| IDNT-02 | Phase 1 | Complete |
+| IDNT-03 | Phase 1 | Complete |
+| IDNT-04 | Phase 1 | Complete |
+| IDNT-05 | Phase 1 | Complete |
+| IDNT-06 | Phase 1 | Complete |
 | MCP-01 | Phase 1 | Pending |
 | MCP-02 | Phase 1 | Pending |
 | MCP-03 | Phase 1 | Pending |
