@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 01-foundation-01-PLAN.md
-last_updated: "2026-03-25T23:52:37.751Z"
+stopped_at: "Paused at Task 3 checkpoint: 01-foundation-02-PLAN.md (MongoDB Atlas provisioning)"
+last_updated: "2026-03-25T23:57:40.299Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -47,6 +47,7 @@ Plan: 2 of 5
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 18 | 2 tasks | 9 files |
+| Phase 01-foundation P02 | 8 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Used ajv/dist/2020.js import for JSON Schema draft 2020-12 support — base Ajv class only handles draft-07
 - [Phase 01-foundation]: additionalProperties: true on schema sections to allow future fields without breaking validation
 - [Phase 01-foundation]: relationships section included with _sensitivity: private — most sensitive data in identity document
+- [Phase 01-foundation]: OpenAI text-embedding-3-small (1536 dims) confirmed as embedding model — locks Atlas vector index numDimensions; cannot change without collection drop and reindex
+- [Phase 01-foundation]: relationships section excluded from MongoDB seed — _sensitivity:private, not needed for Phase 1 MCP tools; 4 sections loaded: persona, skills, projects, values
 
 ### Pending Todos
 
@@ -76,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T23:52:37.749Z
-Stopped at: Completed 01-foundation-01-PLAN.md
+Last session: 2026-03-25T23:57:26.507Z
+Stopped at: Paused at Task 3 checkpoint: 01-foundation-02-PLAN.md (MongoDB Atlas provisioning)
 Resume file: None

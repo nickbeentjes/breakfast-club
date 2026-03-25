@@ -21,7 +21,7 @@
 - [ ] **MCP-03**: `identity_query` tool does semantic search across identity data using MongoDB Atlas vector search
 - [ ] **MCP-04**: `projects_list` tool returns current active projects with status
 - [ ] **MCP-05**: `verify_integrity` tool returns current git tree SHA and checks against public attestation chain
-- [ ] **MCP-06**: MCP server connects to MongoDB lazily on first tool call and caches the connection for the session lifetime
+- [x] **MCP-06**: MCP server connects to MongoDB lazily on first tool call and caches the connection for the session lifetime
 - [ ] **MCP-07**: All MCP server logging goes to stderr (stdout reserved for JSON-RPC message stream)
 
 ### Projection Engine
@@ -130,7 +130,7 @@
 | MCP-03 | Phase 1 | Pending |
 | MCP-04 | Phase 1 | Pending |
 | MCP-05 | Phase 1 | Pending |
-| MCP-06 | Phase 1 | Pending |
+| MCP-06 | Phase 1 | Complete |
 | MCP-07 | Phase 1 | Pending |
 | SKIL-01 | Phase 1 | Pending |
 | SKIL-02 | Phase 1 | Pending |
