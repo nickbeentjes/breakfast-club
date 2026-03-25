@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 5 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Project scaffold + identity schema with sensitivity labels + seed data validation
+- [x] 01-01-PLAN.md — Project scaffold + identity schema with sensitivity labels + seed data validation
 - [ ] 01-02-PLAN.md — MongoDB lazy singleton + embedding utility + seed script + Atlas provisioning checkpoint
 - [ ] 01-03-PLAN.md — MCP server core with stdio transport + identity_context and projects_list tools
 - [ ] 01-04-PLAN.md — identity_query (vector search) + verify_integrity tools, complete tool registration
