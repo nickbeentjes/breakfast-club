@@ -1,0 +1,28 @@
+{
+  "name": "breakfast-club",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Self-sovereign AI identity system — MCP server",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc && chmod 755 build/index.js",
+    "start": "node build/index.js",
+    "lint": "eslint src/",
+    "validate-seed": "tsx scripts/validate-seed.ts"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0",
+    "ajv": "^8.18.0",
+    "mongodb": "^7.1.1",
+    "openai": "^6.33.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.5.0",
+    "eslint": "^10.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
