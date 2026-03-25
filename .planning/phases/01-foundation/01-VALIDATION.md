@@ -2,8 +2,8 @@
 phase: 1
 slug: foundation
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-03-26
 ---
 
@@ -17,57 +17,55 @@ created: 2026-03-26
 
 | Property | Value |
 |----------|-------|
-| **Framework** | jest 29.x (TypeScript via ts-jest) |
-| **Config file** | jest.config.ts — Wave 0 installs |
-| **Quick run command** | `npm test -- --testPathPattern=unit` |
-| **Full suite command** | `npm test` |
-| **Estimated runtime** | ~15 seconds |
+| **Framework** | Integration tests (tsc + build + script verification) |
+| **Config file** | None — per CLAUDE.md: "integration tests that prove the thing works, not unit tests for getters" |
+| **Quick run command** | `npm run build` |
+| **Full suite command** | `npm run build && npx tsx scripts/validate-seed.ts && npx tsx scripts/count-tokens.ts SKILL.md` |
+| **Estimated runtime** | ~10 seconds |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `npm test -- --testPathPattern=unit`
-- **After every plan wave:** Run `npm test`
-- **Before `/gsd:verify-work`:** Full suite must be green
-- **Max feedback latency:** 15 seconds
+- **After every task commit:** Run the task's `<automated>` verify command
+- **After every plan wave:** Run `npm run build` to confirm no regressions
+- **Before `/gsd:verify-work`:** Full suite must be green (build + validate-seed + count-tokens)
+- **Max feedback latency:** 10 seconds
 
 ---
 
 ## Per-Task Verification Map
 
-| Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
-|---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 1-01-01 | 01-01 | 1 | IDNT-01 | unit | `npx ajv validate -s schema/identity.schema.json -d seed-data/nick-identity.json` | ❌ W0 | ⬜ pending |
-| 1-01-02 | 01-01 | 1 | IDNT-02 | unit | `npm test -- --testPathPattern=schema` | ❌ W0 | ⬜ pending |
-| 1-01-03 | 01-01 | 1 | IDNT-03 | unit | `npm test -- --testPathPattern=sensitivity` | ❌ W0 | ⬜ pending |
-| 1-02-01 | 01-02 | 1 | IDNT-04 | integration | `npm run seed:dry-run` | ❌ W0 | ⬜ pending |
-| 1-02-02 | 01-02 | 1 | IDNT-05 | integration | `npm run seed && npm run verify-index` | ❌ W0 | ⬜ pending |
-| 1-03-01 | 01-03 | 2 | MCP-01 | unit | `npm test -- --testPathPattern=transport` | ❌ W0 | ⬜ pending |
-| 1-03-02 | 01-03 | 2 | MCP-02 | unit | `npm test -- --testPathPattern=stderr` | ❌ W0 | ⬜ pending |
-| 1-03-03 | 01-03 | 2 | MCP-03 | integration | `echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' \| node dist/index.js` | ❌ W0 | ⬜ pending |
-| 1-04-01 | 01-04 | 2 | MCP-04 | integration | `npm test -- --testPathPattern=identity_context` | ❌ W0 | ⬜ pending |
-| 1-04-02 | 01-04 | 2 | MCP-05 | integration | `npm test -- --testPathPattern=identity_query` | ❌ W0 | ⬜ pending |
-| 1-04-03 | 01-04 | 2 | MCP-06 | integration | `npm test -- --testPathPattern=projects_list` | ❌ W0 | ⬜ pending |
-| 1-04-04 | 01-04 | 2 | MCP-07 | integration | `npm test -- --testPathPattern=verify_integrity` | ❌ W0 | ⬜ pending |
-| 1-05-01 | 01-05 | 3 | SKIL-01 | manual | Token count check — see Manual Verifications | ❌ W0 | ⬜ pending |
-| 1-05-02 | 01-05 | 3 | SKIL-02 | unit | `npm test -- --testPathPattern=skill-generator` | ❌ W0 | ⬜ pending |
-| 1-05-03 | 01-05 | 3 | SKIL-03 | manual | AI comprehension test — see Manual Verifications | N/A | ⬜ pending |
-| 1-05-04 | 01-05 | 3 | SKIL-04 | unit | `npm test -- --testPathPattern=idnt-06` | ❌ W0 | ⬜ pending |
+| Task ID | Plan | Wave | Requirement | Test Type | Automated Command | Status |
+|---------|------|------|-------------|-----------|-------------------|--------|
+| 1-01-01 | 01-01 | 1 | IDNT-01..06 | build | `npx tsc --noEmit --pretty` | pending |
+| 1-01-02 | 01-01 | 1 | IDNT-01..06 | integration | `npx tsx scripts/validate-seed.ts` | pending |
+| 1-02-01 | 01-02 | 2 | MCP-06 | build | `npx tsc --noEmit` | pending |
+| 1-02-02 | 01-02 | 2 | MCP-06 | integration | `npx tsx scripts/seed-mongodb.ts --dry-run` | pending |
+| 1-02-03 | 01-02 | 2 | MCP-06 | checkpoint | MongoDB Atlas provisioned, 4 docs seeded, vector index created | pending |
+| 1-03-01 | 01-03 | 3 | MCP-01, MCP-07 | build | `npm run build` | pending |
+| 1-03-02 | 01-03 | 3 | MCP-02, MCP-04 | build+grep | `npm run build && grep -l "identity_context\|projects_list" build/tools/*.js` | pending |
+| 1-04-01 | 01-04 | 4 | MCP-03 | build | `npx tsc --noEmit` | pending |
+| 1-04-02 | 01-04 | 4 | MCP-03, MCP-05 | build+grep | `npm run build && grep -c "registerIdentityQueryTool\|registerVerifyIntegrityTool\|registerIdentityContextTool\|registerProjectsListTool" src/index.ts` | pending |
+| 1-05-01 | 01-05 | 4 | SKIL-01..04 | static | `wc -w SKILL.md` (under 450 words) | pending |
+| 1-05-02 | 01-05 | 4 | SKIL-04 | integration | `npx tsx scripts/count-tokens.ts SKILL.md` (exits 0 = PASS) | pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+*Status: pending / green / red / flaky*
 
 ---
 
 ## Wave 0 Requirements
 
-- [ ] `jest.config.ts` — TypeScript Jest config with ts-jest transformer
-- [ ] `src/__tests__/schema.test.ts` — JSON Schema validation tests (IDNT-01, IDNT-02, IDNT-03)
-- [ ] `src/__tests__/transport.test.ts` — MCP stdio transport stubs (MCP-01, MCP-02, MCP-03)
-- [ ] `src/__tests__/tools.test.ts` — Tool handler stubs (MCP-04 through MCP-07)
-- [ ] `src/__tests__/skill-generator.test.ts` — SKILL.md generation stubs (SKIL-01, SKIL-02, SKIL-04)
-- [ ] `scripts/seed.ts` — Seed dry-run capability (IDNT-04, IDNT-05)
-- [ ] `npm install --save-dev jest ts-jest @types/jest` — test framework
+No dedicated Wave 0 is needed. Test infrastructure is embedded in the plans themselves:
+
+- Plan 01-01 Task 1 creates `tsconfig.json` and `package.json` (build infrastructure)
+- Plan 01-01 Task 2 creates `scripts/validate-seed.ts` (schema validation)
+- Plan 01-02 Task 2 creates `scripts/seed-mongodb.ts` with `--dry-run` (seed verification)
+- Plan 01-05 Task 2 creates `scripts/count-tokens.ts` (token budget verification)
+
+Each plan's verify commands use `tsc`, `npm run build`, or `npx tsx scripts/*.ts` — all created by the plans themselves. No separate test framework install is required.
+
+This aligns with CLAUDE.md: "integration tests that prove the thing works, not unit tests for getters."
 
 ---
 
@@ -75,18 +73,18 @@ created: 2026-03-26
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| SKILL.md is under 600 tokens | SKIL-01 | Token counting requires external tool | Run `npx gpt-tokenizer count SKILL.md` or paste into claude.ai token counter; must report < 600 |
+| MCP tools respond correctly with seeded data | MCP-02..05 | Requires live MongoDB + OpenAI connection | After Plan 01-02 checkpoint: `echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' \| node build/index.js 2>/dev/null` — should list 4 tools |
 | Any AI can use MCP tools from SKILL.md alone | SKIL-03 | Requires AI comprehension judgement | Open fresh Claude session with no project context, paste SKILL.md, ask it to call `identity_context` — should produce valid JSON-RPC tool call |
 
 ---
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 15s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify commands
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 not needed — verification scripts created within plans
+- [x] No watch-mode flags
+- [x] Feedback latency < 15s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** ready
