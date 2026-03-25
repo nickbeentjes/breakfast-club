@@ -30,14 +30,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. SKILL.md exists in the private repo root, stays under 600 tokens, and teaches any AI how to use the identity store without code changes
   4. The founder's identity (nick-identity.json) validates against the schema and is loaded as seed data
   5. All MCP server log output goes to stderr; no stdout contamination corrupts the JSON-RPC stream
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01: Identity schema design — define JSON schema for persona/skills/projects/values with sensitivity labels and commit nick-identity.json seed data
-- [ ] 01-02: MongoDB Atlas setup — provision M0 cluster, design unified `embedding` field for single vector index, establish connection pooling pattern
-- [ ] 01-03: MCP server core — stdio transport, ESM config, lazy MongoDB connection, all logging to stderr
-- [ ] 01-04: MCP owner tools — `identity_context`, `identity_query`, `projects_list`, `verify_integrity` tool handlers
-- [ ] 01-05: SKILL.md generator — produce AI-agnostic instruction file from identity JSON within 600-token budget
+- [ ] 01-01-PLAN.md — Project scaffold + identity schema with sensitivity labels + seed data validation
+- [ ] 01-02-PLAN.md — MongoDB lazy singleton + embedding utility + seed script + Atlas provisioning checkpoint
+- [ ] 01-03-PLAN.md — MCP server core with stdio transport + identity_context and projects_list tools
+- [ ] 01-04-PLAN.md — identity_query (vector search) + verify_integrity tools, complete tool registration
+- [ ] 01-05-PLAN.md — SKILL.md with <identity> XML wrapper under 600-token budget + token counter
 
 ### Phase 2: Projection Engine + Recruiter Chatbot
 **Goal**: Third parties can query a scoped professional projection via a shareable chatbot URL, with owner-controlled whitelist enforcement server-side
