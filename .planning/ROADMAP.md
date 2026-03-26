@@ -49,14 +49,14 @@ Plans:
   3. The professional projection exposes only explicitly whitelisted fields — querying a field outside the allowlist returns nothing, never an accidental disclosure
   4. Every recruiter query is recorded in an append-only audit trail in the private repo
   5. Owner can define a custom projection by dropping a JSON file into `projections/` and it takes effect without code changes
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 02-01: Projection engine — `applyProjection()` function, named projection JSON files, whitelist enforcement inside every MCP tool handler
-- [ ] 02-02: Scoped projection tokens — token-to-projection binding, `public` default for unauthenticated requests, never default to `owner`
-- [ ] 02-03: Recruiter chatbot backend — scoped token endpoint serving professional projection, constrained system prompt, audit trail writes to private repo
-- [ ] 02-04: Recruiter chatbot UI — static HTML/JS shareable URL, no technical setup required for recipient
-- [ ] 02-05: Demo prep — pre-scripted three-interaction narrative, pre-built TypeScript, `breakfast-club-status` health-check tool
+- [ ] 02-01-PLAN.md — Projection engine core: types, applyProjection() whitelist filter, three built-in projection JSON files, loader with Zod validation, unit tests
+- [ ] 02-02-PLAN.md — MCP tool projection integration + Cloudflare Worker scaffold with Hono, auth middleware, token-to-projection binding
+- [ ] 02-03-PLAN.md — Chatbot backend: MongoDB Worker connection, identity retrieval, OpenAI streaming with constrained system prompt, GitHub audit trail
+- [ ] 02-04-PLAN.md — Recruiter chat UI: single static HTML/JS file with streaming fetch, conversation history, shareable URL
+- [ ] 02-05-PLAN.md — Demo prep: breakfast-club-status health-check MCP tool, demo validation script with three-interaction narrative
 **UI hint**: yes
 
 ### Phase 3: Sync Pipeline + Attestation
