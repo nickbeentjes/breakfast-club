@@ -1,0 +1,6 @@
+{
+  "name": "personal",
+  "description": "Full owner access — all sections and sensitivity levels",
+  "allowed_sections": ["persona", "skills", "projects", "values"],
+  "allowed_sensitivity": ["public", "professional", "personal", "private"]
+}

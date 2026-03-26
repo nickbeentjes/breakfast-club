@@ -1,0 +1,10 @@
+{
+  "name": "public",
+  "description": "Public summary — minimal identity information safe for anyone",
+  "allowed_sections": ["persona", "skills"],
+  "allowed_sensitivity": ["public"],
+  "field_allowlist": {
+    "persona": ["name"],
+    "skills": ["primary_stack"]
+  }
+}

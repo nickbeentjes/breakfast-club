@@ -1,0 +1,9 @@
+{
+  "name": "professional",
+  "description": "Recruiter-facing projection — skills, projects, work style only",
+  "allowed_sections": ["persona", "skills", "projects"],
+  "allowed_sensitivity": ["public", "professional"],
+  "field_allowlist": {
+    "persona": ["name", "working_style", "communication_style"]
+  }
+}
