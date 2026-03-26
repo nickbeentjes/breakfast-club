@@ -12,7 +12,7 @@ Breakfast Club delivers a self-sovereign AI identity system in five phases. Phas
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Identity schema + owner MCP server + SKILL.md; the dependency root for everything else
+- [x] **Phase 1: Foundation** - Identity schema + owner MCP server + SKILL.md; the dependency root for everything else (completed 2026-03-26)
 - [ ] **Phase 2: Projection Engine + Recruiter Chatbot** - Whitelist projection system + scoped tokens + chatbot UI; the demo-day deliverable
 - [ ] **Phase 3: Sync Pipeline + Attestation** - GitHub Action syncing identity to MongoDB + hash chain commits to public repo
 - [ ] **Phase 4: Conversation Memory** - Memory chunking + vector retrieval + ingestion pipeline for Claude exports
@@ -36,8 +36,8 @@ Plans:
 - [x] 01-01-PLAN.md — Project scaffold + identity schema with sensitivity labels + seed data validation
 - [x] 01-02-PLAN.md — MongoDB lazy singleton + embedding utility + seed script + Atlas provisioning checkpoint
 - [x] 01-03-PLAN.md — MCP server core with stdio transport + identity_context and projects_list tools
-- [ ] 01-04-PLAN.md — identity_query (vector search) + verify_integrity tools, complete tool registration
-- [ ] 01-05-PLAN.md — SKILL.md with <identity> XML wrapper under 600-token budget + token counter
+- [x] 01-04-PLAN.md — identity_query (vector search) + verify_integrity tools, complete tool registration
+- [x] 01-05-PLAN.md — SKILL.md with <identity> XML wrapper under 600-token budget + token counter
 
 ### Phase 2: Projection Engine + Recruiter Chatbot
 **Goal**: Third parties can query a scoped professional projection via a shareable chatbot URL, with owner-controlled whitelist enforcement server-side
@@ -118,7 +118,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/5 | In Progress|  |
+| 1. Foundation | 5/5 | Complete   | 2026-03-26 |
 | 2. Projection Engine + Recruiter Chatbot | 0/5 | Not started | - |
 | 3. Sync Pipeline + Attestation | 0/4 | Not started | - |
 | 4. Conversation Memory | 0/4 | Not started | - |

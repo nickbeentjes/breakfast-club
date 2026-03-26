@@ -18,9 +18,9 @@
 
 - [x] **MCP-01**: MCP server runs as stdio process compatible with Claude Desktop and Claude Code
 - [x] **MCP-02**: `identity_context` tool returns synthesized persona/skills/projects context for system prompt injection (600-1200 token budget)
-- [ ] **MCP-03**: `identity_query` tool does semantic search across identity data using MongoDB Atlas vector search
+- [x] **MCP-03**: `identity_query` tool does semantic search across identity data using MongoDB Atlas vector search
 - [x] **MCP-04**: `projects_list` tool returns current active projects with status
-- [ ] **MCP-05**: `verify_integrity` tool returns current git tree SHA and checks against public attestation chain
+- [x] **MCP-05**: `verify_integrity` tool returns current git tree SHA and checks against public attestation chain
 - [x] **MCP-06**: MCP server connects to MongoDB lazily on first tool call and caches the connection for the session lifetime
 - [x] **MCP-07**: All MCP server logging goes to stderr (stdout reserved for JSON-RPC message stream)
 
@@ -127,9 +127,9 @@
 | IDNT-06 | Phase 1 | Complete |
 | MCP-01 | Phase 1 | Complete |
 | MCP-02 | Phase 1 | Complete |
-| MCP-03 | Phase 1 | Pending |
+| MCP-03 | Phase 1 | Complete |
 | MCP-04 | Phase 1 | Complete |
-| MCP-05 | Phase 1 | Pending |
+| MCP-05 | Phase 1 | Complete |
 | MCP-06 | Phase 1 | Complete |
 | MCP-07 | Phase 1 | Complete |
 | SKIL-01 | Phase 1 | Pending |

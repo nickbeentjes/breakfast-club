@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-stopped_at: Completed 01-foundation-03-PLAN.md
-last_updated: "2026-03-26T02:52:18.304Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 01-foundation-05-PLAN.md
+last_updated: "2026-03-26T02:56:07.541Z"
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 3
+  completed_plans: 5
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 
 ## Performance Metrics
 
@@ -50,6 +50,8 @@ Plan: 4 of 5
 | Phase 01-foundation P02 | 8 | 2 tasks | 4 files |
 | Phase 01-foundation P02 | 120 | 3 tasks | 4 files |
 | Phase 01-foundation P03 | 2 | 2 tasks | 3 files |
+| Phase 01-foundation P04 | 2 | 2 tasks | 3 files |
+| Phase 01-foundation P05 | 514075 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -72,6 +74,10 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: relationships section excluded from MongoDB seed — _sensitivity:private, not needed for Phase 1 MCP tools; 4 sections loaded: persona, skills, projects, values
 - [Phase 01-foundation]: Tool registration pattern: registerXxxTool(server: McpServer) — keeps tool modules independently testable and avoids circular imports
 - [Phase 01-foundation]: Token budget for identity_context: word-count heuristic (words x 1.3) sufficient for 1200-token ceiling without pulling in tiktoken
+- [Phase 01-foundation]: doc_type pre-filter in $vectorSearch runs inside Atlas ANN pass — excludes Phase 4 memory chunks before scoring, not post-filter
+- [Phase 01-foundation]: verify_integrity uses execSync for git SHA — synchronous is appropriate for a single-command tool handler; Phase 3 attestation chain deferred
+- [Phase 01-foundation]: SKILL.md is a static checked-in file (not runtime-generated) — survives restarts, inspectable, version-controlled
+- [Phase 01-foundation]: Token budget for SKILL.md: words x 1.3 heuristic — no tiktoken needed; 268 words = 349 estimated tokens, well under 600
 
 ### Pending Todos
 
@@ -85,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T02:52:18.301Z
-Stopped at: Completed 01-foundation-03-PLAN.md
+Last session: 2026-03-26T02:56:07.539Z
+Stopped at: Completed 01-foundation-05-PLAN.md
 Resume file: None
