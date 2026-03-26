@@ -52,7 +52,7 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Projection engine core: types, applyProjection() whitelist filter, three built-in projection JSON files, loader with Zod validation, unit tests
+- [x] 02-01-PLAN.md — Projection engine core: types, applyProjection() whitelist filter, three built-in projection JSON files, loader with Zod validation, unit tests
 - [ ] 02-02-PLAN.md — MCP tool projection integration + Cloudflare Worker scaffold with Hono, auth middleware, token-to-projection binding
 - [ ] 02-03-PLAN.md — Chatbot backend: MongoDB Worker connection, identity retrieval, OpenAI streaming with constrained system prompt, GitHub audit trail
 - [ ] 02-04-PLAN.md — Recruiter chat UI: single static HTML/JS file with streaming fetch, conversation history, shareable URL
