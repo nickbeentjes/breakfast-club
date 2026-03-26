@@ -15,6 +15,10 @@ function getOpenAI(): OpenAI {
 }
 
 export async function embedText(text: string): Promise<number[]> {
+  if (process.env.STUB_EMBEDDINGS === "1") {
+    console.error(`[STUB] Returning zero-vector for: ${text.slice(0, 40)}...`);
+    return new Array(EMBEDDING_DIMENSIONS).fill(0);
+  }
   const openai = getOpenAI();
   const response = await openai.embeddings.create({
     model: EMBEDDING_MODEL,
