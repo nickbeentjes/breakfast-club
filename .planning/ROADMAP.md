@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Project scaffold + identity schema with sensitivity labels + seed data validation
 - [x] 01-02-PLAN.md — MongoDB lazy singleton + embedding utility + seed script + Atlas provisioning checkpoint
-- [ ] 01-03-PLAN.md — MCP server core with stdio transport + identity_context and projects_list tools
+- [x] 01-03-PLAN.md — MCP server core with stdio transport + identity_context and projects_list tools
 - [ ] 01-04-PLAN.md — identity_query (vector search) + verify_integrity tools, complete tool registration
 - [ ] 01-05-PLAN.md — SKILL.md with <identity> XML wrapper under 600-token budget + token counter
 
@@ -118,7 +118,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/5 | In Progress|  |
+| 1. Foundation | 3/5 | In Progress|  |
 | 2. Projection Engine + Recruiter Chatbot | 0/5 | Not started | - |
 | 3. Sync Pipeline + Attestation | 0/4 | Not started | - |
 | 4. Conversation Memory | 0/4 | Not started | - |

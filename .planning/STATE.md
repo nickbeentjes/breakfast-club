@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 01-foundation-02-PLAN.md
-last_updated: "2026-03-26T02:47:39.618Z"
+stopped_at: Completed 01-foundation-03-PLAN.md
+last_updated: "2026-03-26T02:52:18.304Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Plan: 3 of 5
 | Phase 01-foundation P01 | 18 | 2 tasks | 9 files |
 | Phase 01-foundation P02 | 8 | 2 tasks | 4 files |
 | Phase 01-foundation P02 | 120 | 3 tasks | 4 files |
+| Phase 01-foundation P03 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: relationships section excluded from MongoDB seed — _sensitivity:private, not needed for Phase 1 MCP tools; 4 sections loaded: persona, skills, projects, values
 - [Phase 01-foundation]: STUB_EMBEDDINGS=1 returns zero-vector (1536 zeros) from embedText — lets seed run without OpenAI quota; zero-vectors are semantically inert but structurally correct; real embeddings must be regenerated before Plan 01-04 vector search is useful
 - [Phase 01-foundation]: relationships section excluded from MongoDB seed — _sensitivity:private, not needed for Phase 1 MCP tools; 4 sections loaded: persona, skills, projects, values
+- [Phase 01-foundation]: Tool registration pattern: registerXxxTool(server: McpServer) — keeps tool modules independently testable and avoids circular imports
+- [Phase 01-foundation]: Token budget for identity_context: word-count heuristic (words x 1.3) sufficient for 1200-token ceiling without pulling in tiktoken
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T02:47:39.616Z
-Stopped at: Completed 01-foundation-02-PLAN.md
+Last session: 2026-03-26T02:52:18.301Z
+Stopped at: Completed 01-foundation-03-PLAN.md
 Resume file: None
