@@ -13,7 +13,7 @@ Breakfast Club delivers a self-sovereign AI identity system in five phases. Phas
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Identity schema + owner MCP server + SKILL.md; the dependency root for everything else (completed 2026-03-26)
-- [ ] **Phase 2: Projection Engine + Recruiter Chatbot** - Whitelist projection system + scoped tokens + chatbot UI; the demo-day deliverable
+- [x] **Phase 2: Projection Engine + Recruiter Chatbot** - Whitelist projection system + scoped tokens + chatbot UI; the demo-day deliverable (completed 2026-03-26)
 - [ ] **Phase 3: Sync Pipeline + Attestation** - GitHub Action syncing identity to MongoDB + hash chain commits to public repo
 - [ ] **Phase 4: Conversation Memory** - Memory chunking + vector retrieval + ingestion pipeline for Claude exports
 - [ ] **Phase 5: Verification Dashboard + Hardening** - GitHub Pages dashboard + client-side chain verification + demo-day hardening
@@ -56,7 +56,7 @@ Plans:
 - [x] 02-02-PLAN.md — MCP tool projection integration + Cloudflare Worker scaffold with Hono, auth middleware, token-to-projection binding
 - [x] 02-03-PLAN.md — Chatbot backend: MongoDB Worker connection, identity retrieval, OpenAI streaming with constrained system prompt, GitHub audit trail
 - [x] 02-04-PLAN.md — Recruiter chat UI: single static HTML/JS file with streaming fetch, conversation history, shareable URL
-- [ ] 02-05-PLAN.md — Demo prep: breakfast-club-status health-check MCP tool, demo validation script with three-interaction narrative
+- [x] 02-05-PLAN.md — Demo prep: breakfast-club-status health-check MCP tool, demo validation script with three-interaction narrative
 **UI hint**: yes
 
 ### Phase 3: Sync Pipeline + Attestation
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-26 |
-| 2. Projection Engine + Recruiter Chatbot | 2/5 | In Progress|  |
+| 2. Projection Engine + Recruiter Chatbot | 5/5 | Complete   | 2026-03-26 |
 | 3. Sync Pipeline + Attestation | 0/4 | Not started | - |
 | 4. Conversation Memory | 0/4 | Not started | - |
 | 5. Verification Dashboard + Hardening | 0/3 | Not started | - |

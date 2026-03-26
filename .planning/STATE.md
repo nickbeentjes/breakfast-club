@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-stopped_at: Completed 02-projection-engine-recruiter-chatbot-04-PLAN.md
-last_updated: "2026-03-26T10:07:19.819Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 02-projection-engine-recruiter-chatbot-05-PLAN.md
+last_updated: "2026-03-26T10:10:37.248Z"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -56,6 +56,7 @@ Plan: 5 of 5
 | Phase 02-projection-engine-recruiter-chatbot P02 | 4 | 2 tasks | 11 files |
 | Phase 02-projection-engine-recruiter-chatbot P03 | 3 | 2 tasks | 7 files |
 | Phase 02-projection-engine-recruiter-chatbot P04 | 2 | 2 tasks | 1 files |
+| Phase 02-projection-engine-recruiter-chatbot P05 | 4 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,8 @@ Recent decisions affecting current work:
 - [Phase 02-projection-engine-recruiter-chatbot]: gpt-4o-mini for chatbot — 15x cheaper than gpt-4o; sufficient for professional projection Q&A; model name in one env var for easy override
 - [Phase 02-projection-engine-recruiter-chatbot]: fetch() + ReadableStream over EventSource for recruiter chat UI — EventSource cannot set Authorization header; fetch-streaming required for Bearer token auth pattern
 - [Phase 02-projection-engine-recruiter-chatbot]: Token in ?token= query string for recruiter UI — zero-friction shareable URL; acceptable for Phase 2 professional-projection-only scope despite log exposure
+- [Phase 02-projection-engine-recruiter-chatbot]: Dynamic import for loadProjections inside tool handler — avoids circular import risk and keeps projection check self-contained
+- [Phase 02-projection-engine-recruiter-chatbot]: Refusal pattern 'not able to share' in demo script matches exact text in buildSystemPrompt OUT OF SCOPE clause
 
 ### Pending Todos
 
@@ -105,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T10:07:19.817Z
-Stopped at: Completed 02-projection-engine-recruiter-chatbot-04-PLAN.md
+Last session: 2026-03-26T10:10:37.246Z
+Stopped at: Completed 02-projection-engine-recruiter-chatbot-05-PLAN.md
 Resume file: None
