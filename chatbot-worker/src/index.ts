@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { Env } from "./types.js";
+import { chatRoute } from "./routes/chat.js";
 
 type Variables = {
   projectionName: string;
@@ -16,7 +17,6 @@ app.get("/health", (c) => {
   return c.json({ status: "ok", service: "breakfast-club-chatbot" });
 });
 
-// Chat routes will be added in Plan 02-03
-// app.post("/chat", authMiddleware, chatHandler);
+app.route("/chat", chatRoute);
 
 export default app;
