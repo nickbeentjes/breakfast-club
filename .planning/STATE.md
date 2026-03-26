@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 02-projection-engine-recruiter-chatbot-02-PLAN.md
-last_updated: "2026-03-26T09:58:56.679Z"
+stopped_at: Completed 02-projection-engine-recruiter-chatbot-03-PLAN.md
+last_updated: "2026-03-26T10:03:56.283Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 10
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 02 (projection-engine-recruiter-chatbot) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Plan: 3 of 5
 | Phase 01-foundation P05 | 514075 | 2 tasks | 3 files |
 | Phase 02-projection-engine-recruiter-chatbot P01 | 10 | 2 tasks | 8 files |
 | Phase 02-projection-engine-recruiter-chatbot P02 | 4 | 2 tasks | 11 files |
+| Phase 02-projection-engine-recruiter-chatbot P03 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,9 @@ Recent decisions affecting current work:
 - [Phase 02-projection-engine-recruiter-chatbot]: MCP tools default to personal projection — owner tools see everything; optional param preserves backward compatibility
 - [Phase 02-projection-engine-recruiter-chatbot]: authMiddleware blocks personal/owner projection names at middleware boundary — defense in depth even if TOKEN_MAP misconfigured
 - [Phase 02-projection-engine-recruiter-chatbot]: chatbot-worker has its own package.json with mongodb/openai — Cloudflare Workers bundles at deploy time, cannot share root node_modules
+- [Phase 02-projection-engine-recruiter-chatbot]: Inline PROJECTIONS constant in identity.ts — wrangler esbuild cannot read filesystem at Worker runtime; embedding projection definitions as TypeScript constants is the correct Worker pattern
+- [Phase 02-projection-engine-recruiter-chatbot]: waitUntil for audit — Cloudflare Workers ctx.waitUntil() keeps Worker alive to complete background task after response is sent; this is the idiomatic non-blocking pattern for Workers
+- [Phase 02-projection-engine-recruiter-chatbot]: gpt-4o-mini for chatbot — 15x cheaper than gpt-4o; sufficient for professional projection Q&A; model name in one env var for easy override
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T09:58:56.677Z
-Stopped at: Completed 02-projection-engine-recruiter-chatbot-02-PLAN.md
+Last session: 2026-03-26T10:03:56.281Z
+Stopped at: Completed 02-projection-engine-recruiter-chatbot-03-PLAN.md
 Resume file: None
