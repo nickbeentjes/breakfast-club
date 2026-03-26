@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: Completed 02-projection-engine-recruiter-chatbot-01-PLAN.md
-last_updated: "2026-03-26T09:53:10.313Z"
+stopped_at: Completed 02-projection-engine-recruiter-chatbot-02-PLAN.md
+last_updated: "2026-03-26T09:58:56.679Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 10
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 02 (projection-engine-recruiter-chatbot) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Plan: 2 of 5
 | Phase 01-foundation P04 | 2 | 2 tasks | 3 files |
 | Phase 01-foundation P05 | 514075 | 2 tasks | 3 files |
 | Phase 02-projection-engine-recruiter-chatbot P01 | 10 | 2 tasks | 8 files |
+| Phase 02-projection-engine-recruiter-chatbot P02 | 4 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Token budget for SKILL.md: words x 1.3 heuristic — no tiktoken needed; 268 words = 349 estimated tokens, well under 600
 - [Phase 02-projection-engine-recruiter-chatbot]: applyProjection() returns [] when projection is null/undefined — fail closed, never fall back to full docs
 - [Phase 02-projection-engine-recruiter-chatbot]: loadProjections() throws on any invalid projection file rather than skipping — startup failure preferred over silent data leak
+- [Phase 02-projection-engine-recruiter-chatbot]: MCP tools default to personal projection — owner tools see everything; optional param preserves backward compatibility
+- [Phase 02-projection-engine-recruiter-chatbot]: authMiddleware blocks personal/owner projection names at middleware boundary — defense in depth even if TOKEN_MAP misconfigured
+- [Phase 02-projection-engine-recruiter-chatbot]: chatbot-worker has its own package.json with mongodb/openai — Cloudflare Workers bundles at deploy time, cannot share root node_modules
 
 ### Pending Todos
 
@@ -94,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-26T09:53:10.311Z
-Stopped at: Completed 02-projection-engine-recruiter-chatbot-01-PLAN.md
+Last session: 2026-03-26T09:58:56.677Z
+Stopped at: Completed 02-projection-engine-recruiter-chatbot-02-PLAN.md
 Resume file: None

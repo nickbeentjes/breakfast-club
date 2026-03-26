@@ -26,11 +26,11 @@
 
 ### Projection Engine
 
-- [ ] **PROJ-01**: Projection system uses whitelist model — only explicitly listed field categories are included in a projection
-- [ ] **PROJ-02**: At least three built-in projections: personal (full), professional (skills/projects/work-style), public (summary only)
-- [ ] **PROJ-03**: Projection enforcement happens server-side in the MCP tool handler, never client-side
-- [ ] **PROJ-04**: Owner can create custom projections as JSON files in the private repo's `projections/` directory
-- [ ] **PROJ-05**: Projection tokens are scoped API keys — a token tied to a projection can only access that projection's data
+- [x] **PROJ-01**: Projection system uses whitelist model — only explicitly listed field categories are included in a projection
+- [x] **PROJ-02**: At least three built-in projections: personal (full), professional (skills/projects/work-style), public (summary only)
+- [x] **PROJ-03**: Projection enforcement happens server-side in the MCP tool handler, never client-side
+- [x] **PROJ-04**: Owner can create custom projections as JSON files in the private repo's `projections/` directory
+- [x] **PROJ-05**: Projection tokens are scoped API keys — a token tied to a projection can only access that projection's data
 
 ### Recruiter Chatbot
 
@@ -136,11 +136,11 @@
 | SKIL-02 | Phase 1 | Complete |
 | SKIL-03 | Phase 1 | Complete |
 | SKIL-04 | Phase 1 | Complete |
-| PROJ-01 | Phase 2 | Pending |
-| PROJ-02 | Phase 2 | Pending |
-| PROJ-03 | Phase 2 | Pending |
-| PROJ-04 | Phase 2 | Pending |
-| PROJ-05 | Phase 2 | Pending |
+| PROJ-01 | Phase 2 | Complete |
+| PROJ-02 | Phase 2 | Complete |
+| PROJ-03 | Phase 2 | Complete |
+| PROJ-04 | Phase 2 | Complete |
+| PROJ-05 | Phase 2 | Complete |
 | RCTR-01 | Phase 2 | Pending |
 | RCTR-02 | Phase 2 | Pending |
 | RCTR-03 | Phase 2 | Pending |

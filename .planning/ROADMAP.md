@@ -53,7 +53,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Projection engine core: types, applyProjection() whitelist filter, three built-in projection JSON files, loader with Zod validation, unit tests
-- [ ] 02-02-PLAN.md — MCP tool projection integration + Cloudflare Worker scaffold with Hono, auth middleware, token-to-projection binding
+- [x] 02-02-PLAN.md — MCP tool projection integration + Cloudflare Worker scaffold with Hono, auth middleware, token-to-projection binding
 - [ ] 02-03-PLAN.md — Chatbot backend: MongoDB Worker connection, identity retrieval, OpenAI streaming with constrained system prompt, GitHub audit trail
 - [ ] 02-04-PLAN.md — Recruiter chat UI: single static HTML/JS file with streaming fetch, conversation history, shareable URL
 - [ ] 02-05-PLAN.md — Demo prep: breakfast-club-status health-check MCP tool, demo validation script with three-interaction narrative
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-26 |
-| 2. Projection Engine + Recruiter Chatbot | 0/5 | Not started | - |
+| 2. Projection Engine + Recruiter Chatbot | 2/5 | In Progress|  |
 | 3. Sync Pipeline + Attestation | 0/4 | Not started | - |
 | 4. Conversation Memory | 0/4 | Not started | - |
 | 5. Verification Dashboard + Hardening | 0/3 | Not started | - |
