@@ -10,7 +10,8 @@
     "lint": "eslint src/",
     "validate-seed": "tsx scripts/validate-seed.ts",
     "seed": "tsx scripts/seed-mongodb.ts",
-    "seed:dry-run": "tsx scripts/seed-mongodb.ts --dry-run"
+    "seed:dry-run": "tsx scripts/seed-mongodb.ts --dry-run",
+    "count-tokens": "tsx scripts/count-tokens.ts"
   },
   "license": "MIT",
   "dependencies": {
