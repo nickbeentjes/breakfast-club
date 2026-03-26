@@ -11,7 +11,8 @@
     "validate-seed": "tsx scripts/validate-seed.ts",
     "seed": "tsx scripts/seed-mongodb.ts",
     "seed:dry-run": "tsx scripts/seed-mongodb.ts --dry-run",
-    "count-tokens": "tsx scripts/count-tokens.ts"
+    "count-tokens": "tsx scripts/count-tokens.ts",
+    "demo-prep": "tsx scripts/demo-prep.ts"
   },
   "license": "MIT",
   "dependencies": {
