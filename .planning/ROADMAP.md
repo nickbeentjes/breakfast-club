@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-26 |
-| 2. Projection Engine + Recruiter Chatbot | 5/5 | Complete   | 2026-03-26 |
+| 2. Projection Engine + Recruiter Chatbot | 5/5 | Complete    | 2026-03-26 |
 | 3. Sync Pipeline + Attestation | 0/4 | Not started | - |
 | 4. Conversation Memory | 0/4 | Not started | - |
 | 5. Verification Dashboard + Hardening | 0/3 | Not started | - |
