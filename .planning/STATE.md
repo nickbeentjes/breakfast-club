@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-stopped_at: "Paused at Task 3 checkpoint: 01-foundation-02-PLAN.md (MongoDB Atlas provisioning)"
-last_updated: "2026-03-25T23:57:40.299Z"
+stopped_at: Completed 01-foundation-02-PLAN.md
+last_updated: "2026-03-26T02:47:39.618Z"
 progress:
   total_phases: 5
   completed_phases: 0
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Plan: 2 of 5
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 18 | 2 tasks | 9 files |
 | Phase 01-foundation P02 | 8 | 2 tasks | 4 files |
+| Phase 01-foundation P02 | 120 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: relationships section included with _sensitivity: private — most sensitive data in identity document
 - [Phase 01-foundation]: OpenAI text-embedding-3-small (1536 dims) confirmed as embedding model — locks Atlas vector index numDimensions; cannot change without collection drop and reindex
 - [Phase 01-foundation]: relationships section excluded from MongoDB seed — _sensitivity:private, not needed for Phase 1 MCP tools; 4 sections loaded: persona, skills, projects, values
+- [Phase 01-foundation]: STUB_EMBEDDINGS=1 returns zero-vector (1536 zeros) from embedText — lets seed run without OpenAI quota; zero-vectors are semantically inert but structurally correct; real embeddings must be regenerated before Plan 01-04 vector search is useful
+- [Phase 01-foundation]: relationships section excluded from MongoDB seed — _sensitivity:private, not needed for Phase 1 MCP tools; 4 sections loaded: persona, skills, projects, values
 
 ### Pending Todos
 
@@ -79,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-25T23:57:26.507Z
-Stopped at: Paused at Task 3 checkpoint: 01-foundation-02-PLAN.md (MongoDB Atlas provisioning)
+Last session: 2026-03-26T02:47:39.616Z
+Stopped at: Completed 01-foundation-02-PLAN.md
 Resume file: None
