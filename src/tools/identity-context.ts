@@ -2,6 +2,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getDb } from "../db.js";
 import type { IdentityDocument, PersonaSection, SkillsSection, ProjectsSection } from "../types.js";
+import { applyProjection } from "../projection/apply-projection.js";
+import { loadProjections, getProjection } from "../projection/load-projections.js";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import type { ProjectionDefinition } from "../projection/types.js";
 
 /**
  * Assembles a synthesized context string from identity documents within a token budget.
@@ -9,6 +14,17 @@ import type { IdentityDocument, PersonaSection, SkillsSection, ProjectsSection }
  */
 function estimateTokens(text: string): number {
   return Math.ceil(text.split(/\s+/).length * 1.3);
+}
+
+let cachedProjections: Map<string, ProjectionDefinition> | null = null;
+
+function getProjections(): Map<string, ProjectionDefinition> {
+  if (!cachedProjections) {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const projectionsDir = join(__dirname, "../../projections");
+    cachedProjections = loadProjections(projectionsDir);
+  }
+  return cachedProjections;
 }
 
 export function registerIdentityContextTool(server: McpServer): void {
@@ -23,9 +39,14 @@ export function registerIdentityContextTool(server: McpServer): void {
           .optional()
           .default(1200)
           .describe("Token budget ceiling for the returned context"),
+        projection_name: z
+          .string()
+          .optional()
+          .default("personal")
+          .describe("Projection to apply — defaults to personal (full owner access)"),
       },
     },
-    async ({ max_tokens }) => {
+    async ({ max_tokens, projection_name }) => {
       try {
         const db = await getDb();
         const docs = await db
@@ -33,9 +54,14 @@ export function registerIdentityContextTool(server: McpServer): void {
           .find({ doc_type: "identity" })
           .toArray();
 
-        // Index docs by section for easy lookup
+        // Apply projection filtering
+        const projections = getProjections();
+        const projection = getProjection(projections, projection_name);
+        const filteredDocs = applyProjection(docs, projection);
+
+        // Index filtered docs by section for easy lookup
         const bySection: Record<string, IdentityDocument> = {};
-        for (const doc of docs) {
+        for (const doc of filteredDocs) {
           bySection[doc.section] = doc;
         }
 
@@ -115,7 +141,7 @@ export function registerIdentityContextTool(server: McpServer): void {
 
         const contextString = lines.join("\n").trim();
         console.error(
-          `identity_context: assembled ${estimateTokens(contextString)} estimated tokens`
+          `identity_context: projection=${projection_name}, assembled ${estimateTokens(contextString)} estimated tokens`
         );
 
         return { content: [{ type: "text" as const, text: contextString }] };
