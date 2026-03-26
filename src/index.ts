@@ -4,6 +4,7 @@ import { registerIdentityContextTool } from "./tools/identity-context.js";
 import { registerProjectsListTool } from "./tools/projects-list.js";
 import { registerIdentityQueryTool } from "./tools/identity-query.js";
 import { registerVerifyIntegrityTool } from "./tools/verify-integrity.js";
+import { registerBreakfastClubStatusTool } from "./tools/breakfast-club-status.js";
 
 const server = new McpServer({
   name: "breakfast-club-identity",
@@ -15,6 +16,7 @@ registerIdentityContextTool(server);
 registerProjectsListTool(server);
 registerIdentityQueryTool(server);
 registerVerifyIntegrityTool(server);
+registerBreakfastClubStatusTool(server);
 
 async function main() {
   const transport = new StdioServerTransport();
