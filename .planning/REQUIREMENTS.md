@@ -37,7 +37,7 @@
 - [x] **RCTR-01**: A chatbot endpoint exists that accepts a scoped token and serves only the professional projection
 - [x] **RCTR-02**: Chatbot system prompt constrains it to role-fit, experience, and logistics questions (salary and personal data explicitly out of scope)
 - [x] **RCTR-03**: Recruiter can ask natural language questions and receive contextual answers grounded in real identity data
-- [ ] **RCTR-04**: Chatbot is queryable via a simple web UI (shareable URL with token) requiring no technical setup by the recruiter
+- [x] **RCTR-04**: Chatbot is queryable via a simple web UI (shareable URL with token) requiring no technical setup by the recruiter
 - [x] **RCTR-05**: Every recruiter query is logged in an append-only audit trail in the private repo
 
 ### Sync Pipeline
@@ -144,7 +144,7 @@
 | RCTR-01 | Phase 2 | Complete |
 | RCTR-02 | Phase 2 | Complete |
 | RCTR-03 | Phase 2 | Complete |
-| RCTR-04 | Phase 2 | Pending |
+| RCTR-04 | Phase 2 | Complete |
 | RCTR-05 | Phase 2 | Complete |
 | SYNC-01 | Phase 3 | Pending |
 | SYNC-02 | Phase 3 | Pending |
