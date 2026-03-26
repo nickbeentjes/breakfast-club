@@ -59,10 +59,10 @@
 
 ### SKILL.md
 
-- [ ] **SKIL-01**: SKILL.md exists in the private repo root with instructions for any AI to use the identity store
-- [ ] **SKIL-02**: SKILL.md uses Markdown with `<identity>` XML wrapper format for cross-model compatibility
-- [ ] **SKIL-03**: SKILL.md instructs the AI on persona loading, project context, memory search, and projection-scoped behavior
-- [ ] **SKIL-04**: SKILL.md stays within 600-token budget when injected as a system prompt prefix
+- [x] **SKIL-01**: SKILL.md exists in the private repo root with instructions for any AI to use the identity store
+- [x] **SKIL-02**: SKILL.md uses Markdown with `<identity>` XML wrapper format for cross-model compatibility
+- [x] **SKIL-03**: SKILL.md instructs the AI on persona loading, project context, memory search, and projection-scoped behavior
+- [x] **SKIL-04**: SKILL.md stays within 600-token budget when injected as a system prompt prefix
 
 ### Conversation Memory
 
@@ -132,10 +132,10 @@
 | MCP-05 | Phase 1 | Complete |
 | MCP-06 | Phase 1 | Complete |
 | MCP-07 | Phase 1 | Complete |
-| SKIL-01 | Phase 1 | Pending |
-| SKIL-02 | Phase 1 | Pending |
-| SKIL-03 | Phase 1 | Pending |
-| SKIL-04 | Phase 1 | Pending |
+| SKIL-01 | Phase 1 | Complete |
+| SKIL-02 | Phase 1 | Complete |
+| SKIL-03 | Phase 1 | Complete |
+| SKIL-04 | Phase 1 | Complete |
 | PROJ-01 | Phase 2 | Pending |
 | PROJ-02 | Phase 2 | Pending |
 | PROJ-03 | Phase 2 | Pending |
