@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerIdentityContextTool } from "./tools/identity-context.js";
 import { registerProjectsListTool } from "./tools/projects-list.js";
+import { registerIdentityQueryTool } from "./tools/identity-query.js";
+import { registerVerifyIntegrityTool } from "./tools/verify-integrity.js";
 
 const server = new McpServer({
   name: "breakfast-club-identity",
@@ -11,6 +13,8 @@ const server = new McpServer({
 // Register tools
 registerIdentityContextTool(server);
 registerProjectsListTool(server);
+registerIdentityQueryTool(server);
+registerVerifyIntegrityTool(server);
 
 async function main() {
   const transport = new StdioServerTransport();
