@@ -2,3 +2,10 @@ node_modules/
 build/
 .env
 *.tgz
+*.tar.gz
+# personal identity data — keep local
+seed-data/nick-identity.json
+seed-data/*-identity.json
+!seed-data/example-identity.json
+# GSD planning artifacts
+breakfast-club/

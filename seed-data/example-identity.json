@@ -1,0 +1,90 @@
+{
+  "schema_version": "0.1.0",
+  "identity_created": "2025-01-01T00:00:00+00:00",
+  "source": "manual",
+
+  "persona": {
+    "_sensitivity": "personal",
+    "name": "Alex",
+    "location": "Your City, Your Country",
+    "communication_style": {
+      "primary": "Direct and pragmatic",
+      "input_method": "Keyboard",
+      "preferences": [
+        "Working solutions over perfect architecture",
+        "Plain language over jargon",
+        "Show don't tell"
+      ],
+      "dislikes": [
+        "Vendor lock-in",
+        "Unnecessary process",
+        "Having to re-explain context across AI sessions"
+      ]
+    },
+    "working_style": {
+      "approach": "Iterate fast, ship early, improve based on reality",
+      "tools": "VS Code, Claude Code, Node.js",
+      "methodology": "Whatever gets the thing done",
+      "strengths": [
+        "Connecting disparate systems",
+        "Cutting through complexity",
+        "Shipping things"
+      ]
+    }
+  },
+
+  "skills": {
+    "_sensitivity": "professional",
+    "primary_stack": {
+      "languages": ["TypeScript", "Python"],
+      "databases": ["PostgreSQL", "MongoDB"],
+      "infrastructure": ["Docker", "AWS"],
+      "ai_tools": ["Claude", "OpenAI API"]
+    },
+    "domain_expertise": {
+      "web_development": {
+        "depth": "expert",
+        "details": "Full-stack web development, REST APIs, modern frontend frameworks."
+      },
+      "systems_integration": {
+        "depth": "advanced",
+        "details": "Connecting services, API orchestration, data pipelines."
+      }
+    }
+  },
+
+  "projects": {
+    "_sensitivity": "professional",
+    "active": [
+      {
+        "name": "Breakfast Club",
+        "status": "active",
+        "description": "Self-sovereign AI identity MCP server — so all your Claude instances know who you are.",
+        "stack": ["TypeScript", "MongoDB", "MCP"]
+      },
+      {
+        "name": "My Other Project",
+        "status": "in-progress",
+        "description": "Brief description of what it does and why.",
+        "stack": ["Node.js", "PostgreSQL"]
+      }
+    ],
+    "completed": [
+      {
+        "name": "Something I Shipped",
+        "description": "What it was and what it achieved."
+      }
+    ]
+  },
+
+  "values": {
+    "_sensitivity": "personal",
+    "core": [
+      "Build things that actually work",
+      "Respect people's time — yours and theirs",
+      "Own your tools and your data"
+    ],
+    "work_ethic": "Ship it, improve it, repeat.",
+    "on_ai": "A tool that finally matches the speed of thought — use it accordingly."
+  }
+}
