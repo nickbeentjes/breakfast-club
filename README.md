@@ -1,6 +1,6 @@
 # Breakfast Club
 
-**Every Claude instance knows who you are. No manager. No hierarchy. Just shared context.**
+**A personal operating system for your AI instances. Every Claude knows who you are. No manager. No hierarchy. Just shared context.**
 
 You're running 4 Claude Code sessions across 3 projects. Each one starts cold — no idea who you are, what you've built, what you hate, how you work. You spend the first 10 messages getting it up to speed. Again.
 
