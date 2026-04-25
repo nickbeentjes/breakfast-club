@@ -29,6 +29,16 @@ def get_db():
     return conn
 
 
+def rb_get(path: str) -> dict:
+    try:
+        req = urllib.request.Request(f"{RB_BASE}{path}", headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        print(f"[rb_get] {path} failed: {e}")
+        return {}
+
+
 def rb_post(path: str, data: dict):
     try:
         payload = json.dumps(data).encode()
@@ -41,6 +51,56 @@ def rb_post(path: str, data: dict):
         urllib.request.urlopen(req, timeout=5)
     except Exception as e:
         print(f"[rb_post] {path} failed: {e}")
+
+
+def rb_patch(path: str, data: dict):
+    try:
+        payload = json.dumps(data).encode()
+        req = urllib.request.Request(
+            f"{RB_BASE}{path}",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="PATCH"
+        )
+        urllib.request.urlopen(req, timeout=5)
+    except Exception as e:
+        print(f"[rb_patch] {path} failed: {e}")
+
+
+TELEGRAM_TOKEN = None
+TELEGRAM_CHAT_ID = None
+
+def _load_telegram_creds():
+    """Load Telegram credentials from bot.py config."""
+    global TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+    try:
+        import importlib.util, sys
+        spec = importlib.util.spec_from_file_location("bot_cfg", Path(__file__).parent.parent.parent / "bot.py")
+        # Just hardcode — same values as bot.py
+        TELEGRAM_TOKEN = "8744181775:AAFo0IYt8DghDnXcJFxeP5xKeP7wwHoineM"
+        TELEGRAM_CHAT_ID = 8664999274
+    except Exception:
+        pass
+
+_load_telegram_creds()
+
+
+def telegram_send(text: str):
+    """Send a Telegram message to kees."""
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        print(f"[telegram] (no creds) {text[:80]}")
+        return
+    try:
+        payload = json.dumps({"chat_id": TELEGRAM_CHAT_ID, "text": text}).encode()
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        urllib.request.urlopen(req, timeout=10)
+    except Exception as e:
+        print(f"[telegram_send] failed: {e}")
 
 
 def log_observation(observation_type: str, detail: str, severity: str = "info", action_taken: str = None):
@@ -358,6 +418,43 @@ def detect_source_diversity(conn):
         log_observation("source_diversity", turn_detail, severity="info")
 
 
+def check_lrc_expirations():
+    """Archive LRCs whose end_date has passed."""
+    data = rb_get("/lrc")
+    lrcs = data.get("lrcs", [])
+    now_date = datetime.now(timezone.utc).date()
+
+    for lrc in lrcs:
+        if lrc.get("status") != "active":
+            continue
+        end_date_str = lrc.get("end_date")
+        if not end_date_str:
+            continue
+        try:
+            end_date = datetime.fromisoformat(end_date_str).date()
+        except Exception:
+            continue
+
+        if end_date < now_date:
+            rb_patch(f"/lrc/{lrc['id']}", {"status": "archived"})
+
+            rb_post("/observations", {
+                "ts": datetime.utcnow().isoformat(),
+                "observation_type": "lrc_expired",
+                "detail": f"LRC '{lrc['name']}' passed end_date {end_date_str} — archived",
+                "severity": "info",
+                "action_taken": "status set to archived"
+            })
+
+            telegram_send(
+                f"LRC archived: '{lrc['name']}'\n"
+                f"End date {end_date_str} has passed.\n"
+                f"It's no longer injected into context but all notes are saved.\n"
+                f"If it's not actually done, use /lrc until {lrc['name']} <new-date> to extend."
+            )
+            print(f"[lrc_expire] Archived '{lrc['name']}' (end_date {end_date_str})")
+
+
 def main():
     print(f"[observer] Starting at {datetime.utcnow().isoformat()}")
 
@@ -372,6 +469,8 @@ def main():
     except Exception as e:
         print(f"[observer] Server not reachable: {e}")
         return
+
+    check_lrc_expirations()
 
     conn = get_db()
     try:

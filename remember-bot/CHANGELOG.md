@@ -1,5 +1,23 @@
 # remember-bot CHANGELOG
 
+## 2026-04-25 — LRC lifespan, auto-demotion, and idea capture
+
+### What was built
+- `end_date` + `end_condition` columns added to `lrc` table via safe ALTER TABLE migration
+- `lrc_ideas` table for freeform idea capture against any LRC (with source tracking)
+- `POST /lrc/{id}/idea` and `POST /lrc/by-name/{name}/idea` endpoints
+- `GET /lrc/{id}` now returns ideas array
+- `PATCH /lrc/{id}` now accepts `end_date` and `end_condition`
+- `/context` endpoint includes `recent_ideas` (last 10) per LRC in payload
+- `observer.py`: `check_lrc_expirations()` — archives LRCs past `end_date`, logs observation, Telegrams kees with extend hint; runs first in `main()` after health check
+- `bot.py`: `/lrc done <name>` — manual archive; `/lrc until <name> <date/condition>` — set expiry; `/lrc idea <name> <text>` — capture idea; `/lrc add` supports inline `until <date>`; `/lrc list` shows end_date and end_condition
+- `bot.py`: LRC block in `build_memory_context()` includes end info and captured ideas
+
+### Problem solved
+LRCs were permanent with no lifecycle. Now they can have a natural expiry date ("preparing for keynote — ends 2026-05-25") and auto-archive when done. Ideas can be captured against an LRC mid-session without spinning up Claude, keeping fleeting thoughts attached to the right context.
+
+---
+
 ## 2026-04-25 — LRC (Long Running Contexts)
 
 ### What was built

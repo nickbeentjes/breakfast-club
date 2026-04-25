@@ -132,6 +132,14 @@ CREATE TABLE IF NOT EXISTS observations (
     action_taken TEXT,
     created_at TEXT DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS lrc_ideas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    lrc_id INTEGER NOT NULL REFERENCES lrc(id),
+    content TEXT NOT NULL,
+    source TEXT DEFAULT 'bot',
+    created_at TEXT DEFAULT (datetime('now'))
+);
 """)
     conn.commit()
 
@@ -141,7 +149,20 @@ CREATE TABLE IF NOT EXISTS observations (
         conn.execute("ALTER TABLE turns ADD COLUMN source TEXT")
         conn.commit()
 
+    # Additive migration: add end_date and end_condition to lrc
+    migrate_lrc_lifespan(conn)
+
     conn.close()
+
+
+def migrate_lrc_lifespan(conn):
+    """Add end_date and end_condition columns if not present."""
+    cols = [row[1] for row in conn.execute("PRAGMA table_info(lrc)").fetchall()]
+    if "end_date" not in cols:
+        conn.execute("ALTER TABLE lrc ADD COLUMN end_date TEXT")
+    if "end_condition" not in cols:
+        conn.execute("ALTER TABLE lrc ADD COLUMN end_condition TEXT")
+    conn.commit()
 
 
 def seed_lrcs():
@@ -277,6 +298,13 @@ class LRCUpdateIn(BaseModel):
     priority: Optional[int] = None
     status: Optional[str] = None
     known_fixes: Optional[list] = None
+    end_date: Optional[str] = None
+    end_condition: Optional[str] = None
+
+
+class LRCIdeaIn(BaseModel):
+    content: str
+    source: str = "bot"
 
 
 class LRCFixIn(BaseModel):
@@ -710,6 +738,11 @@ def get_context(source: str = "unknown", max_tokens: int = 4000):
                     d["known_fixes"] = []
             else:
                 d["known_fixes"] = []
+            idea_rows = conn.execute(
+                "SELECT content, created_at FROM lrc_ideas WHERE lrc_id=? ORDER BY created_at DESC LIMIT 10",
+                (d["id"],)
+            ).fetchall()
+            d["recent_ideas"] = [dict(r) for r in idea_rows]
             lrcs.append(d)
 
         # ── Rough token estimate ──────────────────────────────────────────────
@@ -839,6 +872,12 @@ def get_lrc(lrc_id: int):
             (lrc_id,)
         ).fetchall()
         d["sessions"] = [dict(r) for r in session_rows]
+        # Ideas
+        idea_rows = conn.execute(
+            "SELECT * FROM lrc_ideas WHERE lrc_id=? ORDER BY created_at DESC",
+            (lrc_id,)
+        ).fetchall()
+        d["ideas"] = [dict(r) for r in idea_rows]
         return d
     finally:
         conn.close()
@@ -879,6 +918,10 @@ def update_lrc(lrc_id: int, body: LRCUpdateIn):
             updates["status"] = body.status
         if body.known_fixes is not None:
             updates["known_fixes"] = json.dumps(body.known_fixes)
+        if body.end_date is not None:
+            updates["end_date"] = body.end_date
+        if body.end_condition is not None:
+            updates["end_condition"] = body.end_condition
         set_clause = ", ".join(f"{k}=?" for k in updates)
         values = list(updates.values()) + [lrc_id]
         conn.execute(f"UPDATE lrc SET {set_clause} WHERE id=?", values)
@@ -911,6 +954,40 @@ def add_lrc_fix(lrc_id: int, body: LRCFixIn):
         )
         conn.commit()
         return {"ok": True, "fix_count": len(fixes)}
+    finally:
+        conn.close()
+
+
+@app.post("/lrc/{lrc_id}/idea")
+def add_lrc_idea(lrc_id: int, body: LRCIdeaIn):
+    conn = get_db()
+    try:
+        row = conn.execute("SELECT id, name FROM lrc WHERE id=?", (lrc_id,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="LRC not found")
+        conn.execute(
+            "INSERT INTO lrc_ideas (lrc_id, content, source) VALUES (?, ?, ?)",
+            (lrc_id, body.content, body.source)
+        )
+        conn.commit()
+        return {"ok": True, "lrc_name": row["name"]}
+    finally:
+        conn.close()
+
+
+@app.post("/lrc/by-name/{name}/idea")
+def add_idea_by_name(name: str, body: LRCIdeaIn):
+    conn = get_db()
+    try:
+        row = conn.execute("SELECT id, name FROM lrc WHERE LOWER(name)=LOWER(?)", (name,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail=f"LRC '{name}' not found")
+        conn.execute(
+            "INSERT INTO lrc_ideas (lrc_id, content, source) VALUES (?, ?, ?)",
+            (row["id"], body.content, body.source)
+        )
+        conn.commit()
+        return {"ok": True, "lrc_id": row["id"], "lrc_name": row["name"]}
     finally:
         conn.close()
 
