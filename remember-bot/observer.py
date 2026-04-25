@@ -174,6 +174,156 @@ def detect_project_threads(conn, since_long: datetime):
         log_observation("project_thread", detail, severity="info")
 
 
+def detect_lrc_candidates(conn, since: datetime):
+    """Detect topics in 3+ sessions in last 14 days — flag as LRC candidates."""
+    print("[observer] Detecting LRC candidates...")
+
+    since_iso = since.isoformat()
+    rows = conn.execute(
+        """SELECT t.content, t.session_id
+           FROM turns t
+           JOIN sessions s ON t.session_id = s.id
+           WHERE t.ts > ? AND t.role = 'user'
+           ORDER BY t.session_id""",
+        (since_iso,)
+    ).fetchall()
+
+    phrase_sessions: dict = defaultdict(set)
+    phrase_first_seen: dict = {}
+    phrase_last_seen: dict = {}
+
+    for row in rows:
+        ngrams = extract_ngrams(row["content"], n=3)
+        for phrase in ngrams:
+            phrase_sessions[phrase].add(row["session_id"])
+
+    # Topics in 3+ sessions
+    repeated = {p: sids for p, sids in phrase_sessions.items() if len(sids) >= 3}
+
+    for phrase, session_ids in repeated.items():
+        # Check if already an LRC
+        lrc_count = conn.execute(
+            "SELECT COUNT(*) FROM lrc WHERE name LIKE ?", (f"%{phrase}%",)
+        ).fetchone()[0]
+        if lrc_count > 0:
+            continue
+
+        # Get first/last seen timestamps from sessions
+        session_times = conn.execute(
+            f"SELECT MIN(started_at) as first, MAX(started_at) as last FROM sessions WHERE id IN ({','.join('?' for _ in session_ids)})",
+            list(session_ids)
+        ).fetchone()
+        first_seen = session_times["first"] if session_times else since_iso
+        last_seen = session_times["last"] if session_times else since_iso
+
+        # Determine if this looks like an issue (fix/broken/error language)
+        issue_keywords = ["fix", "broke", "broken", "error", "fail", "bug", "still", "again", "latency", "slow"]
+        suggested_type = "issue" if any(kw in phrase.lower() for kw in issue_keywords) else "project"
+
+        # Check if candidate already exists
+        existing = conn.execute(
+            "SELECT * FROM lrc_candidates WHERE topic=?", (phrase,)
+        ).fetchone()
+
+        if existing:
+            conn.execute(
+                "UPDATE lrc_candidates SET session_count=?, last_seen=? WHERE topic=?",
+                (len(session_ids), last_seen, phrase)
+            )
+            conn.commit()
+        else:
+            conn.execute(
+                "INSERT INTO lrc_candidates (topic, session_count, first_seen, last_seen, suggested_type) VALUES (?, ?, ?, ?, ?)",
+                (phrase, len(session_ids), first_seen, last_seen, suggested_type)
+            )
+            conn.commit()
+            log_observation(
+                "lrc_candidate",
+                f'New LRC candidate: "{phrase}" appears in {len(session_ids)} sessions (type: {suggested_type})',
+                severity="info"
+            )
+
+    # Issue loop detection — same topic + "fix"/"tried"/"still broken" in 3+ sessions
+    issue_pattern = re.compile(r"\b(fix|tried|still broken|again|still slow|latency|error|failed|broken)\b", re.IGNORECASE)
+    issue_sessions: dict = defaultdict(set)
+
+    for row in rows:
+        if issue_pattern.search(row["content"]):
+            ngrams = extract_ngrams(row["content"], n=2)
+            for phrase in ngrams:
+                issue_sessions[phrase].add(row["session_id"])
+
+    issue_loops = {p: sids for p, sids in issue_sessions.items() if len(sids) >= 3}
+    for phrase, session_ids in issue_loops.items():
+        lrc_count = conn.execute(
+            "SELECT COUNT(*) FROM lrc WHERE name LIKE ?", (f"%{phrase}%",)
+        ).fetchone()[0]
+        if lrc_count > 0:
+            continue
+        existing = conn.execute(
+            "SELECT * FROM lrc_candidates WHERE topic=?", (phrase,)
+        ).fetchone()
+        if not existing:
+            session_times = conn.execute(
+                f"SELECT MIN(started_at) as first, MAX(started_at) as last FROM sessions WHERE id IN ({','.join('?' for _ in session_ids)})",
+                list(session_ids)
+            ).fetchone()
+            first_seen = session_times["first"] if session_times else since_iso
+            last_seen = session_times["last"] if session_times else since_iso
+            conn.execute(
+                "INSERT INTO lrc_candidates (topic, session_count, first_seen, last_seen, suggested_type) VALUES (?, ?, ?, ?, ?)",
+                (phrase, len(session_ids), first_seen, last_seen, "issue")
+            )
+            conn.commit()
+            log_observation(
+                "lrc_candidate",
+                f'Issue loop detected: "{phrase}" in {len(session_ids)} sessions with fix/error language',
+                severity="warn"
+            )
+
+
+def detect_nickhq_membership(conn, since: datetime):
+    """Auto-link sessions mentioning NickHQ keywords to the NickHQ LRC."""
+    print("[observer] Detecting NickHQ membership...")
+
+    # Get NickHQ LRC id
+    lrc_row = conn.execute("SELECT id FROM lrc WHERE name='NickHQ'").fetchone()
+    if not lrc_row:
+        print("[observer] NickHQ LRC not found, skipping")
+        return
+
+    nickhq_lrc_id = lrc_row["id"]
+    since_iso = since.isoformat()
+    nickhq_keywords = re.compile(
+        r"\b(plugin|module|HQ|NickHQ|iOS|FastAPI|dashboard)\b", re.IGNORECASE
+    )
+
+    session_rows = conn.execute(
+        "SELECT id FROM sessions WHERE started_at > ?", (since_iso,)
+    ).fetchall()
+
+    linked = 0
+    for srow in session_rows:
+        sid = srow["id"]
+        turns = conn.execute(
+            "SELECT content FROM turns WHERE session_id=? AND role='user' ORDER BY id ASC LIMIT 10",
+            (sid,)
+        ).fetchall()
+        for turn in turns:
+            if nickhq_keywords.search(turn["content"]):
+                conn.execute(
+                    """INSERT OR IGNORE INTO lrc_sessions (lrc_id, session_id, relevance_note)
+                       VALUES (?, ?, 'auto-detected: NickHQ keywords')""",
+                    (nickhq_lrc_id, sid)
+                )
+                conn.commit()
+                linked += 1
+                break
+
+    if linked:
+        print(f"[observer] Linked {linked} sessions to NickHQ LRC")
+
+
 def detect_source_diversity(conn):
     """Note which AI sources have been using the /context endpoint."""
     print("[observer] Checking source diversity...")
@@ -227,12 +377,15 @@ def main():
     try:
         now = datetime.now(timezone.utc)
         seven_days_ago = now - timedelta(days=7)
+        fourteen_days_ago = now - timedelta(days=14)
         thirty_days_ago = now - timedelta(days=30)
 
         detect_repeat_topics(conn, since=seven_days_ago)
         detect_context_gaps(conn, since=seven_days_ago)
         detect_project_threads(conn, since_long=thirty_days_ago)
         detect_source_diversity(conn)
+        detect_lrc_candidates(conn, since=fourteen_days_ago)
+        detect_nickhq_membership(conn, since=seven_days_ago)
     finally:
         conn.close()
 

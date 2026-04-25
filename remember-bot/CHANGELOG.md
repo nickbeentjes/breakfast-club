@@ -1,5 +1,21 @@
 # remember-bot CHANGELOG
 
+## 2026-04-25 — LRC (Long Running Contexts)
+
+### What was built
+- `lrc`, `lrc_sessions`, `lrc_candidates` tables in DB
+- Seeded two LRCs on init: NickHQ (project, priority 10), voice_latency (issue, priority 8)
+- `/lrc` endpoints: list, get, create, patch, add fix, list candidates, promote, dismiss
+- `/context` now returns `lrcs` at top of payload — always injected before session summaries
+- `observer.py`: `detect_lrc_candidates()` — flags topics in 3+ sessions (14d window) as candidates; issue-loop detection for fix/error language; `detect_nickhq_membership()` auto-links sessions with NickHQ keywords via `lrc_sessions`
+- `tuner.py`: `promote_lrc_candidates()` — uses Claude to type/describe candidates with 5+ sessions; `update_lrc_states()` — weekly state refresh for project LRCs active this week
+- `bot.py`: LRC block injected FIRST in `build_memory_context()` with known attempts prominently listed; `/lrc` command with subcommands: list, add, issue, fix, candidates, promote
+
+### Problem solved
+Sessions re-investigating the same issue (voice latency, broken feature) without knowing prior attempts. LRCs ensure every session starts with always-on context for persistent projects and issue loops — the `known_fixes` list explicitly tells future sessions what has already been tried and failed.
+
+---
+
 ## 2026-04-25 — initial breakfast-club build
 
 ### What was built

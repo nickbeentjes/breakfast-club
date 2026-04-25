@@ -29,6 +29,39 @@ def get_db():
 def init_db():
     conn = get_db()
     conn.executescript("""
+CREATE TABLE IF NOT EXISTS lrc (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    lrc_type TEXT NOT NULL DEFAULT 'project',
+    description TEXT,
+    state TEXT,
+    known_fixes TEXT DEFAULT '[]',
+    priority INTEGER DEFAULT 5,
+    always_inject INTEGER DEFAULT 1,
+    confirmed_by TEXT DEFAULT 'user',
+    status TEXT DEFAULT 'active',
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS lrc_sessions (
+    lrc_id INTEGER NOT NULL REFERENCES lrc(id),
+    session_id INTEGER NOT NULL REFERENCES sessions(id),
+    relevance_note TEXT,
+    PRIMARY KEY (lrc_id, session_id)
+);
+
+CREATE TABLE IF NOT EXISTS lrc_candidates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    topic TEXT NOT NULL,
+    session_count INTEGER DEFAULT 1,
+    first_seen TEXT,
+    last_seen TEXT,
+    suggested_type TEXT DEFAULT 'project',
+    promoted INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     started_at TEXT NOT NULL,
@@ -111,7 +144,24 @@ CREATE TABLE IF NOT EXISTS observations (
     conn.close()
 
 
+def seed_lrcs():
+    conn = get_db()
+    count = conn.execute("SELECT COUNT(*) FROM lrc").fetchone()[0]
+    if count == 0:
+        now = datetime.utcnow().isoformat()
+        conn.executemany(
+            "INSERT INTO lrc (name, lrc_type, description, priority, confirmed_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [
+                ("NickHQ", "project", "Core iOS dashboard app + FastAPI backend. Everything kees builds is either part of NickHQ or feeds into it. Plugins: TimeTracker, Marketplace, Scrap Trading.", 10, "user", now, now),
+                ("voice_latency", "issue", "Twilio voice call latency issue. Attempts made: Google TTS (8-20s latency, too slow), Deepgram STT integration (pending), ElevenLabs upgrade (pending). Core bottleneck is Twilio+Google TTS pipeline.", 8, "deduction", now, now),
+            ]
+        )
+        conn.commit()
+    conn.close()
+
+
 init_db()
+seed_lrcs()
 
 # ── Session helpers ────────────────────────────────────────────────────────────
 
@@ -210,6 +260,34 @@ class CrashIn(BaseModel):
     context_before: Optional[str] = None
     recovery_prompt: Optional[str] = None
     session_id: Optional[int] = None
+
+
+class LRCIn(BaseModel):
+    name: str
+    lrc_type: str = "project"
+    description: Optional[str] = None
+    state: Optional[str] = None
+    priority: int = 5
+    confirmed_by: str = "user"
+
+
+class LRCUpdateIn(BaseModel):
+    description: Optional[str] = None
+    state: Optional[str] = None
+    priority: Optional[int] = None
+    status: Optional[str] = None
+    known_fixes: Optional[list] = None
+
+
+class LRCFixIn(BaseModel):
+    fix_description: str
+    outcome: str  # 'failed', 'partial', 'unknown'
+    tried_at: Optional[str] = None
+
+
+class LRCCandidatePromoteIn(BaseModel):
+    lrc_type: str = "project"
+    confirmed_by: str = "user"
 
 
 # ── Endpoints ──────────────────────────────────────────────────────────────────
@@ -618,8 +696,24 @@ def get_context(source: str = "unknown", max_tokens: int = 4000):
         ).fetchone()
         last_turn = dict(last_turn_row) if last_turn_row else None
 
+        # ── Active LRCs (always injected, ordered by priority) ───────────────
+        lrc_rows = conn.execute(
+            "SELECT * FROM lrc WHERE status='active' AND always_inject=1 ORDER BY priority DESC"
+        ).fetchall()
+        lrcs = []
+        for row in lrc_rows:
+            d = dict(row)
+            if d.get("known_fixes"):
+                try:
+                    d["known_fixes"] = json.loads(d["known_fixes"])
+                except (json.JSONDecodeError, TypeError):
+                    d["known_fixes"] = []
+            else:
+                d["known_fixes"] = []
+            lrcs.append(d)
+
         # ── Rough token estimate ──────────────────────────────────────────────
-        payload_text = profile + " ".join(preferences) + json.dumps(recent_sessions) + json.dumps(active_projects)
+        payload_text = profile + " ".join(preferences) + json.dumps(recent_sessions) + json.dumps(active_projects) + json.dumps(lrcs)
         token_estimate = len(payload_text) // 4
 
         # ── Truncate preferences if over max_tokens ───────────────────────────
@@ -627,7 +721,7 @@ def get_context(source: str = "unknown", max_tokens: int = 4000):
             # Keep trimming preferences until under budget
             while token_estimate > max_tokens and len(preferences) > 1:
                 preferences = preferences[:-5]
-                payload_text = profile + " ".join(preferences) + json.dumps(recent_sessions)
+                payload_text = profile + " ".join(preferences) + json.dumps(recent_sessions) + json.dumps(lrcs)
                 token_estimate = len(payload_text) // 4
 
         # ── Log this retrieval ────────────────────────────────────────────────
@@ -640,6 +734,7 @@ def get_context(source: str = "unknown", max_tokens: int = 4000):
         return {
             "generated_at": now,
             "source": source,
+            "lrcs": lrcs,
             "profile": profile,
             "preferences": preferences,
             "recent_sessions": recent_sessions,
@@ -677,6 +772,179 @@ def post_observation(body: dict):
         conn.execute(
             "INSERT INTO observations (ts, observation_type, detail, severity, action_taken) VALUES (?, ?, ?, ?, ?)",
             (now, body.get("observation_type"), body.get("detail"), body.get("severity", "info"), body.get("action_taken"))
+        )
+        conn.commit()
+        return {"ok": True}
+    finally:
+        conn.close()
+
+
+# ── LRC endpoints ─────────────────────────────────────────────────────────────
+
+@app.get("/lrc/candidates")
+def list_lrc_candidates():
+    conn = get_db()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM lrc_candidates WHERE promoted=0 ORDER BY session_count DESC"
+        ).fetchall()
+        return {"candidates": [dict(r) for r in rows]}
+    finally:
+        conn.close()
+
+
+@app.get("/lrc")
+def list_lrcs():
+    conn = get_db()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM lrc WHERE status='active' ORDER BY priority DESC"
+        ).fetchall()
+        lrcs = []
+        for row in rows:
+            d = dict(row)
+            if d.get("known_fixes"):
+                try:
+                    d["known_fixes"] = json.loads(d["known_fixes"])
+                except (json.JSONDecodeError, TypeError):
+                    d["known_fixes"] = []
+            else:
+                d["known_fixes"] = []
+            lrcs.append(d)
+        return {"lrcs": lrcs}
+    finally:
+        conn.close()
+
+
+@app.get("/lrc/{lrc_id}")
+def get_lrc(lrc_id: int):
+    conn = get_db()
+    try:
+        row = conn.execute("SELECT * FROM lrc WHERE id=?", (lrc_id,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="LRC not found")
+        d = dict(row)
+        if d.get("known_fixes"):
+            try:
+                d["known_fixes"] = json.loads(d["known_fixes"])
+            except (json.JSONDecodeError, TypeError):
+                d["known_fixes"] = []
+        else:
+            d["known_fixes"] = []
+        # Linked sessions
+        session_rows = conn.execute(
+            """SELECT ls.relevance_note, s.id, s.title, s.started_at, s.ended_at
+               FROM lrc_sessions ls JOIN sessions s ON ls.session_id=s.id
+               WHERE ls.lrc_id=? ORDER BY s.id DESC LIMIT 20""",
+            (lrc_id,)
+        ).fetchall()
+        d["sessions"] = [dict(r) for r in session_rows]
+        return d
+    finally:
+        conn.close()
+
+
+@app.post("/lrc")
+def create_lrc(body: LRCIn):
+    conn = get_db()
+    try:
+        now = datetime.utcnow().isoformat()
+        cur = conn.execute(
+            """INSERT INTO lrc (name, lrc_type, description, state, priority, confirmed_by, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            (body.name, body.lrc_type, body.description, body.state, body.priority, body.confirmed_by, now, now)
+        )
+        conn.commit()
+        return {"ok": True, "id": cur.lastrowid}
+    finally:
+        conn.close()
+
+
+@app.patch("/lrc/{lrc_id}")
+def update_lrc(lrc_id: int, body: LRCUpdateIn):
+    conn = get_db()
+    try:
+        row = conn.execute("SELECT * FROM lrc WHERE id=?", (lrc_id,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="LRC not found")
+        now = datetime.utcnow().isoformat()
+        updates = {"updated_at": now}
+        if body.description is not None:
+            updates["description"] = body.description
+        if body.state is not None:
+            updates["state"] = body.state
+        if body.priority is not None:
+            updates["priority"] = body.priority
+        if body.status is not None:
+            updates["status"] = body.status
+        if body.known_fixes is not None:
+            updates["known_fixes"] = json.dumps(body.known_fixes)
+        set_clause = ", ".join(f"{k}=?" for k in updates)
+        values = list(updates.values()) + [lrc_id]
+        conn.execute(f"UPDATE lrc SET {set_clause} WHERE id=?", values)
+        conn.commit()
+        return {"ok": True}
+    finally:
+        conn.close()
+
+
+@app.post("/lrc/{lrc_id}/fix")
+def add_lrc_fix(lrc_id: int, body: LRCFixIn):
+    conn = get_db()
+    try:
+        row = conn.execute("SELECT known_fixes FROM lrc WHERE id=?", (lrc_id,)).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="LRC not found")
+        try:
+            fixes = json.loads(row["known_fixes"]) if row["known_fixes"] else []
+        except (json.JSONDecodeError, TypeError):
+            fixes = []
+        fixes.append({
+            "description": body.fix_description,
+            "outcome": body.outcome,
+            "tried_at": body.tried_at or datetime.utcnow().isoformat(),
+        })
+        now = datetime.utcnow().isoformat()
+        conn.execute(
+            "UPDATE lrc SET known_fixes=?, updated_at=? WHERE id=?",
+            (json.dumps(fixes), now, lrc_id)
+        )
+        conn.commit()
+        return {"ok": True, "fix_count": len(fixes)}
+    finally:
+        conn.close()
+
+
+@app.post("/lrc/candidates/{candidate_id}/promote")
+def promote_lrc_candidate(candidate_id: int, body: LRCCandidatePromoteIn):
+    conn = get_db()
+    try:
+        cand = conn.execute(
+            "SELECT * FROM lrc_candidates WHERE id=?", (candidate_id,)
+        ).fetchone()
+        if not cand:
+            raise HTTPException(status_code=404, detail="Candidate not found")
+        now = datetime.utcnow().isoformat()
+        cur = conn.execute(
+            """INSERT OR IGNORE INTO lrc (name, lrc_type, confirmed_by, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            (cand["topic"], body.lrc_type, body.confirmed_by, now, now)
+        )
+        conn.execute(
+            "UPDATE lrc_candidates SET promoted=1 WHERE id=?", (candidate_id,)
+        )
+        conn.commit()
+        return {"ok": True, "lrc_id": cur.lastrowid}
+    finally:
+        conn.close()
+
+
+@app.post("/lrc/candidates/{candidate_id}/dismiss")
+def dismiss_lrc_candidate(candidate_id: int):
+    conn = get_db()
+    try:
+        conn.execute(
+            "UPDATE lrc_candidates SET promoted=2 WHERE id=?", (candidate_id,)
         )
         conn.commit()
         return {"ok": True}

@@ -351,6 +351,166 @@ def update_changelog(actions: list, observations_summary: list):
     CHANGELOG_FILE.write_text(new_content)
 
 
+def rb_patch(path: str, data: dict) -> dict:
+    try:
+        payload = json.dumps(data).encode()
+        req = urllib.request.Request(
+            f"{RB_BASE}{path}",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="PATCH"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        print(f"[rb_patch] {path} failed: {e}")
+        return {}
+
+
+def promote_lrc_candidates(conn) -> list:
+    """Promote LRC candidates with session_count >= 5 to full LRCs using Claude."""
+    actions = []
+
+    rows = conn.execute(
+        "SELECT * FROM lrc_candidates WHERE session_count >= 5 AND promoted=0"
+    ).fetchall()
+
+    for row in rows:
+        topic = row["topic"]
+        suggested_type = row["suggested_type"] or "project"
+
+        print(f"[tuner] Promoting LRC candidate: {topic} (type={suggested_type}, sessions={row['session_count']})")
+
+        prompt = f"""You are categorising a recurring topic from a developer's session history.
+
+Topic: "{topic}"
+Appears in {row['session_count']} sessions
+Suggested type: {suggested_type}
+
+Determine:
+1. Is this better as "project" (an ongoing codebase/feature) or "issue" (a recurring bug/problem)?
+2. Write a 1-2 sentence description of what this topic likely refers to.
+
+Respond in this exact format (no extra text):
+TYPE: project
+DESCRIPTION: <your description here>"""
+
+        result = run_claude_sync(prompt, timeout=60)
+        lrc_type = suggested_type
+        description = None
+
+        if result:
+            type_m = re.search(r"^TYPE:\s*(\w+)", result, re.MULTILINE)
+            desc_m = re.search(r"^DESCRIPTION:\s*(.+)$", result, re.MULTILINE)
+            if type_m:
+                lrc_type = type_m.group(1).strip().lower()
+                if lrc_type not in ("project", "issue"):
+                    lrc_type = suggested_type
+            if desc_m:
+                description = desc_m.group(1).strip()
+
+        resp = rb_post("/lrc", {
+            "name": topic,
+            "lrc_type": lrc_type,
+            "description": description,
+            "priority": 6,
+            "confirmed_by": "deduction",
+        })
+
+        if resp.get("ok"):
+            conn.execute(
+                "UPDATE lrc_candidates SET promoted=1 WHERE id=?", (row["id"],)
+            )
+            conn.commit()
+            action_msg = f"Promoted LRC candidate '{topic}' → {lrc_type} (id={resp.get('id')})"
+            actions.append(action_msg)
+            log_action("lrc_promoted", f"Candidate '{topic}' promoted", action_msg)
+            print(f"[tuner] {action_msg}")
+
+    return actions
+
+
+def update_lrc_states(conn) -> list:
+    """Update state summaries for project-type LRCs active this week."""
+    actions = []
+    now = datetime.now(timezone.utc)
+    seven_days_ago = now - timedelta(days=7)
+    seven_days_ago_iso = seven_days_ago.isoformat()
+
+    lrc_rows = conn.execute(
+        "SELECT * FROM lrc WHERE status='active' AND lrc_type='project'"
+    ).fetchall()
+
+    for lrc in lrc_rows:
+        lrc_id = lrc["id"]
+        lrc_name = lrc["name"]
+
+        # Find sessions linked to this LRC in the last 7 days
+        session_rows = conn.execute(
+            """SELECT DISTINCT ls.session_id FROM lrc_sessions ls
+               JOIN sessions s ON ls.session_id=s.id
+               WHERE ls.lrc_id=? AND s.started_at > ?""",
+            (lrc_id, seven_days_ago_iso)
+        ).fetchall()
+
+        # Also check sessions by keyword if not enough linked ones
+        if len(session_rows) < 3:
+            keyword_rows = conn.execute(
+                """SELECT DISTINCT t.session_id FROM turns t
+                   JOIN sessions s ON t.session_id=s.id
+                   WHERE LOWER(t.content) LIKE ? AND s.started_at > ?
+                   LIMIT 10""",
+                (f"%{lrc_name.lower()}%", seven_days_ago_iso)
+            ).fetchall()
+            all_sids = set(r["session_id"] for r in session_rows) | set(r["session_id"] for r in keyword_rows)
+        else:
+            all_sids = set(r["session_id"] for r in session_rows)
+
+        if len(all_sids) < 3:
+            continue
+
+        print(f"[tuner] Updating state for LRC '{lrc_name}' ({len(all_sids)} sessions this week)")
+
+        # Pull recent turns from these sessions
+        turns_text = []
+        for sid in list(all_sids)[:5]:
+            turns = conn.execute(
+                """SELECT role, content FROM turns WHERE session_id=?
+                   ORDER BY id DESC LIMIT 10""",
+                (sid,)
+            ).fetchall()
+            for t in reversed(turns):
+                turns_text.append(f"[{t['role']}]: {t['content'][:300]}")
+
+        turns_block = "\n".join(turns_text[:30]) if turns_text else "(no turns)"
+        current_state = lrc.get("state") or "(no previous state)"
+
+        prompt = f"""You are summarising the current status of a recurring project from a developer's session history.
+
+Project/LRC: "{lrc_name}"
+Description: {lrc.get('description') or '(none)'}
+Previous state: {current_state}
+
+Recent session turns (this week):
+{turns_block}
+
+Write a 2-4 sentence plain-English summary of the CURRENT state of this project.
+Focus on: what was built/changed this week, what's currently working, what's still open.
+Be specific and factual — only include what's evident from the turns above.
+Do not start with "I" or "The project". Just write the state directly."""
+
+        result = run_claude_sync(prompt, timeout=90)
+        if result and len(result) > 30:
+            resp = rb_patch(f"/lrc/{lrc_id}", {"state": result})
+            if resp.get("ok"):
+                action_msg = f"Updated state for LRC '{lrc_name}': {result[:120]}..."
+                actions.append(action_msg)
+                log_action("lrc_state_updated", f"LRC '{lrc_name}' state updated", action_msg)
+                print(f"[tuner] State updated for '{lrc_name}'")
+
+    return actions
+
+
 def main():
     print(f"[tuner] Starting at {datetime.utcnow().isoformat()}")
 
@@ -408,6 +568,23 @@ def main():
         gap_count = sum(1 for o in recent_obs if o["observation_type"] == "context_gap")
         if gap_count:
             observations_summary.append(f"{gap_count} context gap events this week")
+
+        # Promote strong LRC candidates
+        lrc_promote_actions = promote_lrc_candidates(conn)
+        all_actions.extend(lrc_promote_actions)
+        if lrc_promote_actions:
+            observations_summary.append(f"{len(lrc_promote_actions)} LRC candidate(s) promoted")
+
+        # Update LRC states
+        lrc_state_actions = update_lrc_states(conn)
+        all_actions.extend(lrc_state_actions)
+        if lrc_state_actions:
+            observations_summary.append(f"{len(lrc_state_actions)} LRC state(s) updated")
+
+        # LRC candidate summary
+        candidate_count = sum(1 for o in recent_obs if o["observation_type"] == "lrc_candidate")
+        if candidate_count:
+            observations_summary.append(f"{candidate_count} new LRC candidate(s) detected")
 
     finally:
         conn.close()
